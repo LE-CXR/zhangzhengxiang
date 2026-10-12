@@ -45,15 +45,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .t-name{font-weight:600;font-size:15.5px;color:var(--ink);margin-top:2px}
 .t-line{font-size:13.5px;color:var(--sub);margin-top:2px}
 .t-flag{flex:none;align-self:center;width:8px;height:44px;border-radius:4px}
-.today-gap{margin:2px 0;border:1px solid var(--todayb);background:var(--today);border-radius:14px;padding:11px 14px}
-.gap-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
-.gap-badge{flex:none;font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:6px;padding:2px 7px}
-.gap-time{font-size:14.5px;font-weight:800;color:var(--accent)}
-.gap-len{font-size:12.5px;color:var(--sub)}
-.gap-tip{font-size:12px;color:var(--sub)}
-.gap-add{flex:none;margin-left:auto;border:none;background:var(--accent);color:#fff;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:transform .1s}
-.gap-add:active{transform:scale(.95)}
-.gap-list{margin-top:10px;margin-bottom:0}
+.today-gap{margin:3px 0;border:1px dashed var(--todayb);background:var(--today);border-radius:12px;padding:4px 10px}
+.gap-row{display:flex;align-items:center;gap:6px;min-height:24px}
+
+/* 今日课程表头：周徽标 + 下节课提醒（颜色取该门课的颜色） */
+.today-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.today-row .today-meta{margin-bottom:0}
+.next-tip{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:0;text-align:right;animation:ntIn .26s ease}
+.next-tip[hidden]{display:none}
+.next-tip b{font-size:13.5px;font-weight:800;color:var(--nt,#da7756);letter-spacing:.2px;white-space:nowrap}
+.next-tip span{font-size:11.5px;color:var(--nt,#da7756);opacity:.72;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes ntIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+
+/* 现在时间线（iOS 日历风）：一条橙线 + 左侧圆点 + 时间 */
+.now-line{display:flex;align-items:center;gap:8px;margin:2px 2px 6px}
+.now-dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(218,119,86,.15)}
+.now-txt{flex:none;font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.2px;font-variant-numeric:tabular-nums}
+.now-rule{flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(218,119,86,.85),rgba(218,119,86,.10))}
+/* 正在上课 / 正在空档 */
+.t-item.is-now{border-color:var(--accent);box-shadow:0 0 0 1px rgba(218,119,86,.35),0 6px 18px -12px rgba(218,119,86,.6);background:linear-gradient(0deg,rgba(218,119,86,.06),rgba(218,119,86,.06)),var(--card2)}
+.t-item.is-now .t-flag{width:10px}
+.now-badge{display:inline-flex;align-items:center;gap:5px;margin-top:7px;font-size:12.5px;font-weight:800;color:var(--accent);white-space:nowrap}
+.now-badge i{flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);animation:nowPulse 1.7s ease-in-out infinite}
+@keyframes nowPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+@media (prefers-reduced-motion:reduce){.now-badge i{animation:none}}
+.today-gap.is-now{border-style:solid;border-color:var(--accent);background:rgba(218,119,86,.10)}
+.today-gap.is-now .gap-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+.today-gap.is-now .gap-tip{color:var(--accent);font-weight:800}
+.gap-badge{flex:none;font-size:10px;font-weight:700;color:var(--accent);border:1px solid currentColor;border-radius:4px;padding:0 4px;line-height:13px;opacity:.9}
+.gap-time{flex:none;font-size:12px;font-weight:800;color:var(--accent);white-space:nowrap;letter-spacing:-.2px}
+.gap-len{flex:none;font-size:11.5px;color:var(--sub);white-space:nowrap}
+.gap-tip{flex:1 1 auto;min-width:0;font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gap-add{flex:none;margin-left:auto;border:none;background:transparent;color:var(--accent);padding:3px 0;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform .1s}
+.gap-add:active{transform:scale(.92)}
+.gap-list{margin-top:6px;margin-bottom:0}
+.gap-list .plan-rep,.gap-list .plan-del{opacity:.5;width:32px;height:32px}
+@media (max-width:430px){.gap-len{display:none}}
 .plan-head{font-size:15px;font-weight:800;margin:2px 0 10px;display:flex;align-items:center;gap:8px}
 .plan-head::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--accent);flex:none}
 .plan-sub{font-size:12px;font-weight:700;color:var(--sub);margin:0 0 7px}
@@ -111,9 +138,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 }
 
 
-.plan-addrow{display:flex;justify-content:center;margin:0 0 -6px}
-.plan-addbtn{border:1px dashed var(--line);background:none;color:var(--sub);border-radius:16px;padding:6px 15px;font-size:12.5px;
-  cursor:pointer;font-family:inherit;transition:transform .12s}
+.plan-addrow{display:flex;justify-content:center;margin:14px 0 2px}
+.plan-addbtn{border:1px dashed var(--line);background:none;color:var(--sub);border-radius:12px;padding:4px 11px;font-size:11.5px;
+  opacity:.85;cursor:pointer;font-family:inherit;transition:transform .12s}
 .plan-addbtn:active{transform:scale(.97)}
 .ps-mask{position:fixed;inset:0;background:rgba(20,19,17,.45);z-index:120;display:flex;align-items:flex-end;justify-content:center}
 .ps-mask[hidden]{display:none}
@@ -156,6 +183,9 @@ html.dark .ps-mask{background:rgba(0,0,0,.62)}
 .confetti{position:fixed;width:7px;height:7px;border-radius:2px;pointer-events:none;z-index:200;will-change:transform,opacity;animation:confetti .8s cubic-bezier(.2,.75,.3,1) forwards}
 @keyframes confetti{0%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.35);opacity:0}}
 html.dark .today-gap{background:#2b2620}
+html.dark .now-dot{box-shadow:0 0 0 4px rgba(218,119,86,.22)}
+html.dark .t-item.is-now{background:linear-gradient(0deg,rgba(218,119,86,.13),rgba(218,119,86,.13)),var(--card2)}
+html.dark .today-gap.is-now{background:rgba(218,119,86,.18)}
 html.dark .plan-item.done{background:#2b2620}
 .plan-chips.compact{gap:6px;margin:2px 0 0}
 .plan-chips.compact .plan-chip.small{padding:5px 11px;font-size:12.5px}
@@ -224,6 +254,28 @@ html.dark .btn.ghost{background:#2c2a27;border-color:var(--line)}
 .mkt-group{flex:none;width:400px;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px}
 .mkt-logic{margin-top:14px;font-size:13.5px;color:var(--sub);line-height:1.7;border-top:1px dashed var(--line);padding-top:10px}
 .mkt-logic b{color:var(--ink)}
+.mkt-logic .logic-hd{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.mkt-logic .logic-sub{font-size:11.5px;color:var(--sub);opacity:.85}
+.mkt-logic .logic-line{margin-top:4px}
+.mkt-logic .logic-toggle{margin-left:auto;background:none;border:none;font:inherit;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:3px;padding:2px 0}
+.mkt-logic .logic-toggle.on .logic-caret{transform:rotate(90deg)}
+.mkt-logic .logic-brief{margin-top:5px;cursor:pointer;font-size:12.5px;line-height:1.5}
+.mkt-logic .logic-brief:active{opacity:.75}
+.mkt-logic .logic-body{margin-top:2px}
+.mkt-logic .logic-topic{color:var(--accent)}
+.mkt-logic .logic-none{color:var(--sub);opacity:.85}
+.mkt-logic .logic-k{display:inline-block;min-width:30px;color:var(--sub);font-size:12px;margin-right:4px}
+.mkt-logic i.logic-kw{font-style:normal;color:var(--ink)}
+.mkt-logic em{font-style:normal;color:var(--sub);font-size:12px;margin-left:6px}
+.mkt-logic .logic-more{margin-top:9px;color:var(--accent);font-weight:700;font-size:12.5px;cursor:pointer;display:inline-flex;gap:4px;align-items:center}
+.mkt-logic .logic-caret{transition:transform .2s}
+.mkt-logic .logic-more.on .logic-caret{transform:rotate(90deg)}
+.mkt-logic .logic-quotes{margin-top:8px;border-top:1px dashed var(--line)}
+.mkt-logic .logic-quote{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px dashed var(--line);padding:8px 0;cursor:pointer;font:inherit;color:var(--ink)}
+.mkt-logic .logic-quote:active{opacity:.7}
+.mkt-logic .logic-quote-t{display:block;font-size:12.5px;line-height:1.45}
+.mkt-logic .logic-quote-m{display:block;font-size:11.5px;color:var(--sub);margin-top:2px}
+.mkt-logic .logic-foot{margin-top:9px;font-size:11.5px;color:var(--sub);opacity:.8}
 /* 详情弹层 */
 .modal-mask{position:fixed;inset:0;background:rgba(20,19,17,.45);backdrop-filter:blur(2px);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fade .18s ease}
 .modal-mask[hidden]{display:none}
@@ -306,6 +358,10 @@ html.dark .sheet-mask{background:rgba(0,0,0,.62)}
 .sheet-sub{padding:5px 20px 10px;font-size:12.5px;color:var(--sub)}
 .sheet-list{flex:1;min-height:0;overflow-y:auto;padding:2px 20px 24px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
 .sheet-cats{display:flex;gap:6px;padding:0 20px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:none}
+.sheet-list.pg-l{animation:newsSlideL .26s cubic-bezier(.22,.9,.28,1)}
+.sheet-list.pg-r{animation:newsSlideR .26s cubic-bezier(.22,.9,.28,1)}
+@keyframes newsSlideL{from{opacity:.3;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes newsSlideR{from{opacity:.3;transform:translateX(-22px)}to{opacity:1;transform:none}}
 .cat-btn{flex:none;border:1px solid var(--line);background:var(--card2);color:var(--sub);font-size:13px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer;white-space:nowrap}
 .cat-btn b{font-weight:600;font-size:11.5px;margin-left:4px;opacity:.8}
 .cat-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -374,7 +430,10 @@ html.dark .reader-frame{background:#1a1917}
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="2"/><path d="M3 10h18" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
     今日课程
   </h2>
-  <div class="today-meta" id="todayMeta"></div>
+  <div class="today-row">
+    <div class="today-meta" id="todayMeta"></div>
+    <div class="next-tip" id="nextTip" hidden></div>
+  </div>
   <div class="today-list" id="todayList"></div>
 </section>
 
@@ -488,7 +547,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-11.f1</div>
+    <div class="cs-ver">2026-10-12.f2</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -630,9 +689,43 @@ function hm2m(t){ const p=String(t||"0:0").split(":"); return (+p[0]||0)*60+(+p[
 function m2hm(m){ m=Math.max(0,Math.round(m)); return pad(Math.floor(m/60))+":"+pad(m%60); }
 function durTxt(m){ const h=Math.floor(m/60), r=m%60; return (h?h+"小时":"")+(r?r+"分":"") || "0分"; }
 function esc2(x){ return String(x==null?"":x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function courseHtml(c){
-  return '<div class="t-item"><span class="t-flag" style="background:'+colorOf(c)+'"></span>'
-   + '<div class="t-time"><div class="range">'+c.start+' - '+c.end+'</div><div class="slot">'+c.start+' 开始</div></div>'
+function nowMin(){ const d = new Date(); return d.getHours()*60 + d.getMinutes(); }
+function leftTxt(m){
+  m = Math.max(0, Math.round(m));
+  const h = Math.floor(m/60), r = m%60;
+  if(h && r) return h+" 小时 "+r+" 分";
+  if(h) return h+" 小时";
+  return r+" 分";
+}
+/* 下节课提醒：开课前 25 分钟内出现，写清教室 / 时间 / 老师 / 还剩多久，颜色用这门课的颜色 */
+const NEXT_WARN = 25;
+function nextTipHtml(nx, left){
+  if(!nx || left < 0 || left > NEXT_WARN) return "";
+  const tail = left <= 5 ? ("就剩 " + left + " 分钟，快跑！")
+    : left <= 10 ? ("还有 " + left + " 分钟，该动身了")
+    : left <= 18 ? ("还有 " + left + " 分钟，收拾一下")
+    : ("还有 " + left + " 分钟，不慌");
+  return '<b>'+nx.start+' · '+esc2(nx.loc)+'</b><span>'+esc2(nx.teacher)+' · '+tail+'</span>';
+}
+function renderNextTip(list){
+  const tip = document.getElementById("nextTip");
+  if(!tip) return;
+  const n = nowMin();
+  const nx = (list || []).filter(function(c){ return hm2m(c.start) > n; })
+    .sort(function(a,b){ return hm2m(a.start) - hm2m(b.start); })[0];
+  const html = nextTipHtml(nx, nx ? hm2m(nx.start) - n : -1);
+  if(!html){ tip.hidden = true; tip.innerHTML = ""; return; }
+  tip.style.setProperty("--nt", colorOf(nx));
+  tip.innerHTML = html;
+  tip.hidden = false;
+}
+function nowLineHtml(){ return '<div class="now-line"><span class="now-dot"></span><span class="now-txt">现在 '+m2hm(nowMin())+'</span><span class="now-rule"></span></div>'; }
+function courseHtml(c, isNow){
+  return '<div class="t-item'+(isNow?' is-now':'')+'"><span class="t-flag" style="background:'+colorOf(c)+'"></span>'
+   + '<div class="t-time"><div class="range">'+c.start+' - '+c.end+'</div>'
+   + (isNow ? '<div class="now-badge"><i></i>上课中 · 还剩 '+leftTxt(hm2m(c.end)-nowMin())+'</div>'
+            : '<div class="slot">'+c.start+' 开始</div>')
+   + '</div>'
    + '<div class="t-body"><div class="t-loc">'+esc2(c.loc)+'</div><div class="t-name">'+esc2(c.name)+'</div>'
    + '<div class="t-line">'+esc2(c.teacher)+' · '+c.weeks+'周</div></div></div>';
 }
@@ -663,59 +756,118 @@ return '<div class="plan-item'+(p.done?' done':'')+'" data-pid="'+p.id+'">'
 + '<button class="plan-del" data-act="del" aria-label="删除">✕</button>'
 + '<button class="plan-done" data-act="toggle" aria-label="完成"><span class="tick">✓</span></button></div>';
 }
-function gapHtml(g, plans){
-  const mine = plans.filter(function(p){ return p.slot===g.slot; });
-  return '<div class="today-gap"><div class="gap-row"><span class="gap-badge">空档</span>'
-   + '<span class="gap-time">'+m2hm(g.start)+' – '+m2hm(g.end)+'</span>'
-   + '<span class="gap-len">'+durTxt(g.end-g.start)+'</span>'
-   + '<span class="gap-tip">可以挤出时间做点事</span>'
-   + '<button class="gap-add" data-act="add" data-slot="'+g.slot+'">＋ 计划</button></div>'
-   + (mine.length? '<div class="plan-list gap-list">'+mine.map(planItemHtml).join("")+'</div>' : "")
-   + '</div>';
+function slotStartOf(p){ if(!p.slot) return -1; return hm2m(String(p.slot).split("-")[0]); }
+function inGapRange(p, g){ const s = slotStartOf(p); return s >= 0 && s >= g.start && s < g.end; }
+/* 空档提示语：按时段和时长换着说，同一天同一格稳定不跳字 */
+function gapTip(start, len){
+const h = start/60;
+let pool;
+if(len >= 120) pool = ["整块时间别浪费","来做点正事吧","今天自律了吗","这俩小时很值钱"];
+else if(h < 12) pool = ["来做点什么吧","今天自律了吗","这时候脑子最清醒","开个好头"];
+else if(h < 17) pool = ["下午别打瞌睡","来做点什么吧","今天自律了吗","起来动两下"];
+else if(h < 19) pool = ["去动一动吧","今天运动了吗","趁天还亮","出去走走"];
+else pool = ["今天收个尾吧","今天自律了吗","做点安静的","睡前别刷太久"];
+const i = (new Date().getDate()*7 + Math.round(start/30)*3 + Math.round(len/15)) % pool.length;
+return pool[i];
+}
+function gapHtml(g, plans, isNow){
+const mine = plans || [];
+return '<div class="today-gap'+(isNow?' is-now':'')+'"><div class="gap-row"><span class="gap-badge">空档</span>'
+ + '<span class="gap-time">'+m2hm(g.start)+' – '+m2hm(g.end)+'</span>'
+ + (isNow ? "" : '<span class="gap-len">'+durTxt(g.end-g.start)+'</span>')
+ + (isNow ? '<span class="gap-tip">还剩 '+leftTxt(g.end-nowMin())+'</span>'
+          : '<span class="gap-tip">'+esc2(gapTip(g.start, g.end-g.start))+'</span>')
+ + '<button class="gap-add" data-act="add" data-slot="'+g.slot+'" data-label="'+m2hm(g.start)+' – '+m2hm(g.end)+'">＋ 计划</button></div>'
+ + (mine.length? '<div class="plan-list gap-list">'+mine.map(planItemHtml).join("")+'</div>' : "")
+ + '</div>';
 }
 function addRowHtml(){
   return '<div class="plan-addrow"><button class="plan-addbtn" data-act="openadd">＋ 添加计划</button></div>';
 }
-function planBlockHtml(plans, noClass){
-  const mine = plans.filter(function(p){ return !p.slot; });
-  return (noClass ? '<div class="plan-head">今日无课 · 今天怎么过</div>' : '<div class="plan-head">今日计划</div>')
-  + (plans.length? progressHtml(plans) : "")
-  + (mine.length
-  ? '<div class="plan-list">'+mine.map(planItemHtml).join("")+'</div>'
-  : "")
-  + addRowHtml();
+function planBlockHtml(plans, noClass, rest){
+const mine = rest || plans.filter(function(p){ return !p.slot; });
+return (noClass ? '<div class="plan-head">今日无课 · 今天怎么过</div>' : '')
++ (plans.length? progressHtml(plans) : "")
++ (mine.length
+? '<div class="plan-list">'+mine.map(planItemHtml).join("")+'</div>'
+: "");
 }
-
 function renderToday(){
-  const {week, weekday} = currentWeekWeekday();
-  const mt = document.getElementById("todayMeta");
-  mt.textContent = "第 "+week+" 周";
-  const list = courses.filter(c=>c.weekday===weekday && inWeek(c, week)).sort((a,b)=>a.start.localeCompare(b.start));
-  /* 一整天没课：把「今日课程」标题和第 N 周徽标一起收起来 */
-  const noClass = !list.length;
-  const h2 = document.querySelector("#todayCard h2");
-  if(h2) h2.style.display = noClass ? "none" : "";
-  mt.style.display = noClass ? "none" : "";
-  const box = document.getElementById("todayList");
-  const plans = dayPlan();
-  if(!list.length){ box.innerHTML = planBlockHtml(plans, true); return; }
-  const DAY_START = 8*60, DAY_END = 22*60;
-  const items = [];
-  let cursor = DAY_START;
-  list.forEach(c=>{
-    const st = hm2m(c.start), en = hm2m(c.end);
-    if(st - cursor >= 45) items.push({type:"gap", start:cursor, end:st, slot:m2hm(cursor)+"-"+m2hm(st)});
-    items.push({type:"course", c});
-    cursor = Math.max(cursor, en);
-  });
-  if(DAY_END - cursor >= 45) items.push({type:"gap", start:cursor, end:DAY_END, slot:m2hm(cursor)+"-"+m2hm(DAY_END)});
-  box.innerHTML = planBlockHtml(plans, false) + items.map(it=> it.type==="course" ? courseHtml(it.c) : gapHtml(it, plans)).join("");
+const {week, weekday} = currentWeekWeekday();
+const mt = document.getElementById("todayMeta");
+mt.textContent = "第 "+week+" 周";
+const list = courses.filter(c=>c.weekday===weekday && inWeek(c, week)).sort((a,b)=>a.start.localeCompare(b.start));
+/* 一整天没课：把「今日课程」标题和第 N 周徽标一起收起来 */
+const noClass = !list.length;
+const h2 = document.querySelector("#todayCard h2");
+if(h2) h2.style.display = noClass ? "none" : "";
+mt.style.display = noClass ? "none" : "";
+const box = document.getElementById("todayList");
+const plans = dayPlan();
+if(!list.length){ box.innerHTML = planBlockHtml(plans, true, plans) + addRowHtml(); renderNextTip([]); return; }
+/* ——空档规则：只在两节课之间的空当给计划位——
+   上课前那段不算（9 点上课，8 点的空当没意义）
+   11:30–14:00 是吃饭午休，直接挖掉
+   晚上封顶 21:00，少于 45 分钟不算 */
+const DAY_START = 9*60, DAY_END = 21*60, REST_A = 11*60+30, REST_B = 14*60, MIN_GAP = 45;
+const freeSegs = function(a, b){
+a = Math.max(a, DAY_START); b = Math.min(b, DAY_END);
+if(b - a <= 0) return [];
+const out = [];
+if(a < REST_A) out.push([a, Math.min(b, REST_A)]);
+if(b > REST_B) out.push([Math.max(a, REST_B), b]);
+return out;
+};
+const items = [];
+let cursor = null;
+list.forEach(c=>{
+const st = hm2m(c.start), en = hm2m(c.end);
+if(cursor !== null){
+freeSegs(cursor, st).forEach(function(sg){
+if(sg[1]-sg[0] >= MIN_GAP) items.push({type:"gap", start:sg[0], end:sg[1], slot:m2hm(sg[0])+"-"+m2hm(sg[1])});
+});
 }
-function addPlan(slot, text){
-  text = String(text||"").trim(); if(!text) return;
-  const a = dayPlan();
-  a.push({id: String(Date.now())+Math.random().toString(36).slice(2,6), slot: slot||"", text: text, done:false});
-  setDayPlan(a); addChip(text); renderToday();
+items.push({type:"course", c});
+cursor = cursor === null ? en : Math.max(cursor, en);
+});
+freeSegs(cursor, DAY_END).forEach(function(sg){
+if(sg[1]-sg[0] >= MIN_GAP) items.push({type:"gap", start:sg[0], end:sg[1], slot:m2hm(sg[0])+"-"+m2hm(sg[1])});
+});
+const gaps = items.filter(function(it){ return it.type==="gap"; });
+const inAnyGap = function(p){ return gaps.some(function(g){ return inGapRange(p, g); }); };
+const rest = plans.filter(function(p){ return !p.slot || !inAnyGap(p); });
+/* 现在时间线：找出「正在进行的这一段」和「时间线该插在谁前面」 */
+const nMin = nowMin();
+const spanOf = function(it){ return it.type==="course" ? [hm2m(it.c.start), hm2m(it.c.end)] : [it.start, it.end]; };
+let liveIdx = -1;
+for(let i=0;i<items.length;i++){ const sp = spanOf(items[i]); if(nMin >= sp[0] && nMin < sp[1]){ liveIdx = i; break; } }
+let lineAt = -1;
+for(let i=0;i<items.length;i++){ if(nMin < spanOf(items[i])[0]){ lineAt = i; break; } }
+if(lineAt < 0) lineAt = items.length;
+if(liveIdx >= 0) lineAt = liveIdx;
+box.innerHTML = planBlockHtml(plans, false, rest)
++ items.map(function(it, i){
+return (i===lineAt ? nowLineHtml() : "")
++ (it.type==="course" ? courseHtml(it.c, i===liveIdx)
+: gapHtml(it, plans.filter(function(p){ return inGapRange(p, it); }), i===liveIdx));
+}).join("")
++ (lineAt === items.length ? nowLineHtml() : "")
++ addRowHtml();
+renderNextTip(list);
+}
+function addPlan(slot, text, remember){
+text = String(text||"").trim(); if(!text) return;
+const a = dayPlan();
+const it = {id: String(Date.now())+Math.random().toString(36).slice(2,6), slot: slot||"", text: text, done:false};
+if(remember){
+const rules = readRep();
+const rid = "r" + Date.now() + Math.random().toString(36).slice(2,6);
+rules.push({id:rid, text:text, slot: slot||"", wd:weekdayNum(), mode:"w"});
+writeRep(rules); it.rep = rid;
+}
+a.push(it);
+setDayPlan(a); addChip(text); renderToday();
+if(remember) toast("记住了：以后每周" + WEEKDAYS[weekdayNum()-1].slice(1) + "这个时段自动出现");
 }
 function celebrate(rect){
   const cols = ["#ff5a62","#21d68e","#f0a13c","#7c9bff","#ffd166","#c15f3c"];
@@ -784,7 +936,11 @@ if(act==="rep"){ toggleRep(b); return; }
     return;
   }
   if(act==="quick"){ addPlan("", b.dataset.text); return; }
-  if(act==="add"){ openInlineAdd(b); return; }
+  if(act==="add"){
+    if(window.__addPanel && window.__addPanel.openSlot) window.__addPanel.openSlot(b.dataset.slot||"", b.dataset.label||"");
+    else openInlineAdd(b);
+    return;
+  }
   if(act==="editchips"){ planEditMode = !planEditMode; renderToday(); return; }
   if(act==="delchip"){ delChip(b.dataset.text); renderToday(); return; }
   if(act==="renchip"){ openChipRename(b); return; }
@@ -989,17 +1145,21 @@ applyTheme();
    - 实时批量  qt.gtimg.cn（GBK 编码）
    - 分时      web.ifzq.gtimg.cn/appstock/app/minute/query（A股/港股/指数）
    - 日K       web.ifzq.gtimg.cn/appstock/app/fqkline/get
-   - 美股分时  东方财富 push2his trends2
-   - 美股日K   web.ifzq.gtimg.cn/appstock/app/usfqkline/get（优先），东财 kline 兜底
+   - 分钟K     ifzq.gtimg.cn/appstock/app/kline/mkline（A股实测直连；港股/美股不支持）
+   - 5日分时    web.ifzq.gtimg.cn/appstock/app/day/query（A股/港股，每天约 240-330 个点）
+ - 美股分时 / 分钟K  东方财富 push2his（时通时不通，仅兜底，失败后 30 分钟不再试）；
+                    腾讯 usMinute 只给「最近一个交易日」→ 美股 1 周 = 前 4 天日K + 末日分时
    缓存：localStorage 兜底，断网时展示上次成功数据
 ========================================================= */
 const TX_Q = "https://qt.gtimg.cn/q=";
 const TX_MIN = "https://web.ifzq.gtimg.cn/appstock/app/minute/query?code=";
 const TX_K = "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=";
 const EM_TREND = "https://push2his.eastmoney.com/api/qt/stock/trends2/get?secid=";
+const EM_KLINE = "https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=";
 const TX_USFQ = "https://web.ifzq.gtimg.cn/appstock/app/usfqkline/get?param=";
 const TX_USMIN = "https://web.ifzq.gtimg.cn/appstock/app/usMinute/query?code=";
 const TX_DAY = "https://web.ifzq.gtimg.cn/appstock/app/day/query?code=";
+const TX_MK = "https://ifzq.gtimg.cn/appstock/app/kline/mkline?param=";
 
 /* ---- 精选股票池（74 支：美股 32 + A股 22 + 港股 16，按当日涨跌自动分组，涨跌各取前 20） ---- */
 const POOL = [
@@ -1112,6 +1272,15 @@ function fetchEMJSONP(url, ms){
     s.onerror = ()=>{ cleanup(); resolve(null); };
     document.head.appendChild(s);
   });
+}
+
+/* 东财 push2his：部分网络（含本机）整段不可达，连 curl 都连不上。
+   失败一次后 30 分钟内不再尝试，否则每次点开股票都要白等一轮超时。 */
+function emIsDead(){
+  try{ return Number(localStorage.getItem("emDead") || 0) > Date.now(); }catch(e){ return false; }
+}
+function emMarkDead(){
+  try{ localStorage.setItem("emDead", String(Date.now() + 30*60*1000)); }catch(e){}
 }
 
 function parseQt(text){
@@ -1235,7 +1404,7 @@ async function loadK(item, n, ytd){
   // 东财 klines 每项是 "日期,开,收,高,低,..." 逗号分隔字符串；兼容嵌套数组
   const clean = kl => kl.map(r=>{
     const p = Array.isArray(r) ? r : String(r).split(",");
-    return {t: String(p[0]).slice(5), v:+p[2]};
+    return {t: String(p[0]).slice(5), v:+p[2], h:+p[3], l:+p[4]};
   }).filter(x=>isFinite(x.v) && x.v > 0);
   // 美股/指数日K：优先腾讯 usfqkline（体积小、CORS 开放、全部标的可用），失败再退东财 kline
   if(item.em){
@@ -1397,15 +1566,13 @@ function renderMarket(q, tag){
   // 每屏一组 4 条：组宽度对齐滚动容器
   fitGroups();
 
-  // 今日逻辑（动态）
+  // 今日逻辑：领涨/领跌 × 最近 60 小时快讯 × 同板块联动（只写有依据的话）
   const logic = document.createElement("div");
   logic.className = "mkt-logic";
-  const leadUp = ups.slice(0,3).map(i=>i.pool.name+" "+fmtPct(i.q.pct)).join("、");
-  const leadDown = downs.slice(0,3).map(i=>i.pool.name+" "+fmtPct(i.q.pct)).join("、");
-  logic.innerHTML = "<b>今日逻辑</b>：" +
-    (leadUp ? "领涨 "+leadUp+"；" : "暂无上涨标的；") +
-    (leadDown ? "领跌 "+leadDown+"。" : "暂无下跌标的。");
+  logic.id = "mktLogic";
   box.appendChild(logic);
+  logicState = {ups: ups, downs: downs, idx: idxItems, all: all};
+  renderLogic();
 
   // 全量并发加载分时（并发 6），每支渲染迷你图
   loadAllCharts();
@@ -1564,11 +1731,15 @@ async function loadWeek(it){
       }
     }catch(e){}
   }
-  /* 美股：东方财富 5 日分时 */
-  const sid = secidOf(it);
+  /* 美股：东方财富 5 日分时（不可达时直接退 5 根日K，不再空等） */
+  const sid = emIsDead() ? "" : secidOf(it);
   if(sid){
     try{
-      const j = await withRetry(()=>fetchJSON(EM_TREND + sid + "&fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54&ndays=5&iscr=0"), 2, 400);
+      const j = await withRetry(async function(){
+        const r = await fetchEMJSONP(EM_TREND + sid + "&fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54&ndays=5&iscr=0", 5000);
+        if(!r || !r.data) throw new Error("em-empty");
+        return r;
+      }, 2, 500);
       const arr = j && j.data && j.data.trends;
       if(arr && arr.length > 20){
         it.week = arr.map(s=>{ const p = String(s).split(","); return {t: p[0].slice(5,16), v: +p[2]}; })
@@ -1576,15 +1747,102 @@ async function loadWeek(it){
         it.fbw = "5日分时";
         return it.week.length;
       }
+    }catch(e){ emMarkDead(); }
+  }
+  /* 美股：腾讯不给美股分钟K，但「最近一个交易日」的分时能拿到 →
+     1 周拼成「前 4 天日K + 最后一天逐分钟」，末日是真实走势，不再是 5 根柱子 */
+  if(t.indexOf("us") === 0){
+    try{
+      if(!it.kp || !it.kp[5]){ await loadK(it, 5); }
+      const dk = (it.kp && it.kp[5]) || [];
+      const jm = await withRetry(()=>fetchJSON(TX_USMIN + t), 2, 400);
+      const node = jm && jm.data && jm.data[t] && jm.data[t].data;
+      const arr = node && node.data;
+      if(dk.length >= 4 && Array.isArray(arr) && arr.length > 30){
+        const mins = arr.map(s=>{ const p = String(s).split(" "); return {v: +p[1]}; })
+                       .filter(x=>isFinite(x.v) && x.v > 0);
+        if(mins.length > 30){
+          it.week = mixWeek(dk, mins);
+          it.fbw = "近5日 · 末日分时";
+          return it.week.length;
+        }
+      }
     }catch(e){}
   }
   /* 都失败：退回 5 根日K */
   if(!it.kp || !it.kp[5]){ try{ await loadK(it, 5); }catch(e){} }
   it.week = (it.kp && it.kp[5]) || [];
-  it.fbw = "近5日";
+  it.fbw = "近5日 · 日K（美股无分钟源）";
   return it.week.length;
 }
 
+/* 日K + 末日分时拼成一条周线：日K点各占 1 份宽度，末日分钟点合起来也占 1 份，
+   横轴才不会被末日撑满；点数压到 200 以内，保留日K点的高低影线 */
+function mixWeek(daily, minutes){
+  const days = daily.slice(0, Math.max(1, daily.length - 1));
+  const last = daily[daily.length - 1] || {};
+  const M = Math.max(120, 200 - days.length);
+  const mins = thin(minutes, M);
+  const per = 1 / mins.length;
+  const pts = days.map(p=>({t:p.t, v:p.v, h:p.h, l:p.l, w:1}));
+  mins.forEach((m, i)=>{ pts.push({t: (i === 0 || i === mins.length - 1) ? (last.t || "") : "", v:m.v, w:per}); });
+  return pts;
+}
+
+function ymdAgo(days){
+  const d = new Date(Date.now() - days*86400000);
+  return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
+}
+/* 细粒度K线（15/30 分钟）：A股走腾讯 mkline（实测直连、CORS 开放，最多 600 根）；
+   港股/美股腾讯不提供分钟K → 退东财（被拦时 12h 熔断），都拿不到就由上层退日线 */
+async function loadFine(item, klt, days){
+  const key = "k" + klt;
+  if(item.kq && item.kq[key]) return item.kq[key];
+  const tx = String(item.tx || "");
+  let pts = [];
+  if(tx.indexOf("sh") === 0 || tx.indexOf("sz") === 0){
+    try{
+      const j = await withRetry(()=>fetchJSON(TX_MK + tx + ",m" + klt + ",,600"), 2, 400);
+      const node = j && j.data && j.data[tx] && j.data[tx]["m" + klt];
+      if(Array.isArray(node) && node.length >= 3){
+        pts = node.map(function(r){
+          const ts = String((r && r[0]) || "");
+          return {
+            d: ts.slice(0,4) + "-" + ts.slice(4,6) + "-" + ts.slice(6,8),
+            t: ts.slice(4,6) + "-" + ts.slice(6,8),
+            v: +r[2], h: +r[3], l: +r[4]
+          };
+        }).filter(function(x){ return isFinite(x.v) && x.v > 0; });
+      }
+    }catch(e){ pts = []; }
+  }
+  if(!pts.length && !emIsDead()){
+    const sid = secidOf(item);
+    if(sid){
+      try{
+        const j = await withRetry(async function(){
+          const r = await fetchEMJSONP(EM_KLINE + sid + "&klt=" + klt + "&fqt=1&beg=0&end=20500101&lmt=1000"
+            + "&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61", 6000);
+          if(!r || !r.data) throw new Error("em-empty");
+          return r;
+        }, 2, 500);
+        const kl = (j && j.data && j.data.klines) || [];
+        pts = kl.map(function(r){
+          const p = String(r).split(",");
+          return {d: p[0].slice(0,10), t: p[0].slice(5,10), v:+p[2], h:+p[3], l:+p[4]};
+        }).filter(function(x){ return isFinite(x.v) && x.v > 0; });
+      }catch(e){ pts = []; emMarkDead(); }
+    }
+  }
+  if(pts.length && days){
+    const cut = ymdAgo(days);
+    const win = pts.filter(function(p){ return p.d >= cut; });
+    if(win.length >= 3) pts = win;
+  }
+  /* 失败的空结果不进缓存，下次点还能再试 */
+  if(pts.length){ item.kq = item.kq || {}; item.kq[key] = pts; }
+  return pts;
+}
 function switchTab(){
   document.querySelectorAll("#dlTabs button").forEach(b=>b.classList.toggle("on", b.dataset.r===detailRange));
   const chart = document.getElementById("dlChart");
@@ -1601,14 +1859,23 @@ function switchTab(){
     } else if(detailRange === "ytd"){
       if(!it.kp || !it.kp.ytd){ await loadK(it, 0, true); }
       pts = it.kp && it.kp.ytd;
+      fb = "日线";
     } else if(detailRange === "5d"){
   await loadWeek(it);
   pts = it.week;
   fb = it.fbw || "";
+  } else if(detailRange === "1mo"){
+  /* 1个月 → 15 分钟线（A股走腾讯 mkline 约 360 根，比 22 根日线细得多）；拿不到就退日线 */
+  let fine = await loadFine(it, 15, 30);
+  let fineLbl = "15分钟线";
+  if(!fine || fine.length < 3){ fine = await loadFine(it, 30, 30); fineLbl = "30分钟线"; }
+  if(fine && fine.length >= 3){ pts = fine; fb = fineLbl; }
+  else { if(!it.kp || !it.kp[22]){ await loadK(it, 22); } pts = it.kp && it.kp[22]; fb = "日线"; }
   } else {
-  const n = detailRange==="1mo"?22 : detailRange==="3mo"?66 : 130;
+  /* 3mo / 6mo: intraday history is not long enough, so daily K + per-day high/low wicks */
+  const n = detailRange==="3mo"?66 : 130;
   if(!it.kp || !it.kp[n]){ await loadK(it, n); }
-  pts = it.kp && it.kp[n];}
+  pts = it.kp && it.kp[n]; fb = "日线";}
     const chg = document.getElementById("dlChg");
     const tc = themeColors();
     if(!pts || pts.length < 3){
@@ -1642,40 +1909,78 @@ function switchTab(){
   })();
 }
 function bigSVG(pts, color, range, fb){
-  pts = thin(pts, 200).filter(p=>p && isFinite(p.v));
+  pts = pts.filter(p=>p && isFinite(p.v));
+  const useWick = pts.length > 3 && pts.length <= 200 && isFinite(pts[0].h) && isFinite(pts[0].l);
+  pts = thin(pts, 200);
   const tc = themeColors();
   const w = 420, h = 236;
   const padL = 10, padR = 58, padT = 14, padB = 26;
-  const vals = pts.map(p=>p.v);
-  let min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+  /* y-domain must include the wicks, otherwise highs/lows get clipped */
+  let min = Infinity, max = -Infinity;
+  pts.forEach(function(p){
+    const lo = (useWick && isFinite(p.l) && p.l > 0) ? Math.min(p.v, p.l) : p.v;
+    const hi = (useWick && isFinite(p.h) && p.h > 0) ? Math.max(p.v, p.h) : p.v;
+    if(lo < min) min = lo;
+    if(hi > max) max = hi;
+  });
   const pad = Math.max((max-min)*0.05, 0.0001);
   min -= pad; max += pad;
   const span = (max-min) || 1;
   const n = pts.length;
-  const px = i => padL + i/(n-1)*(w-padL-padR);
+  /* 横轴按权重铺开（默认每点等宽）：混了末日分时的那条线里，分钟点按比例分宽度 */
+  let wsum = 0;
+  pts.forEach(p=>{ wsum += (p && p.w) || 1; });
+  const xs = []; let acc = 0;
+  pts.forEach(p=>{ const ww = (p && p.w) || 1; xs.push(padL + (acc + ww/2)/wsum*(w-padL-padR)); acc += ww; });
+  const px = i => xs[i];
   const py = v => padT + (1-(v-min)/span)*(h-padT-padB);
   const line = pts.map((p,i)=>px(i).toFixed(1)+","+py(p.v).toFixed(1)).join(" ");
   const uid = "big" + (++sparkUid);
   const yb = h-padB;
   const area = pts.map((p,i)=>px(i).toFixed(1)+","+py(p.v).toFixed(1)).join(" L ") + " L " + px(n-1).toFixed(1) + "," + yb.toFixed(1) + " L " + px(0).toFixed(1) + "," + yb.toFixed(1) + " Z";
-  // Y 轴刻度（3 档，右侧）
+  /* per-day high/low wicks so longer ranges have visible detail too */
+  const wickHtml = useWick ? pts.map(function(p,i){
+    if(!isFinite(p.h) || !isFinite(p.l) || p.h <= 0 || p.l <= 0) return "";
+    const x = px(i).toFixed(1);
+    return '<line x1="'+x+'" y1="'+py(p.h).toFixed(1)+'" x2="'+x+'" y2="'+py(p.l).toFixed(1)+'" stroke="'+color+'" stroke-width="1" opacity="0.3"/>';
+  }).join("") : "";
+  // Y axis: 4 ticks on the right
   const ticks = [];
   for(let i=0;i<=3;i++) ticks.push({v: min + span*i/3, x: w-padR+4, y: py(min + span*i/3)});
   const tickHtml = ticks.map(t=>'<text x="'+t.x+'" y="'+(t.y+3)+'" font-size="10" fill="'+tc.axis+'">'+fmtPrice(t.v)+'</text>').join("");
-  // X 轴刻度（首/中/尾）
-  const xi = [0, Math.floor((n-1)/2), n-1];
-  const xHtml = xi.map(i=>'<text x="'+px(i)+'" y="'+(h-8)+'" text-anchor="'+(i===0?"start":i===n-1?"end":"middle")+'" font-size="10" fill="'+tc.axis+'">'+pts[i].t+'</text>').join("");
+  // X axis: first / 1-3 / 2-3 / last
+  /* 横轴只标有日期的点；稀疏序列（如 5 根日K）仍然只标首尾 */
+  const labeled = []; pts.forEach((p,i)=>{ if(p && p.t) labeled.push(i); });
+  let xi = [];
+  if(labeled.length <= 6){
+    xi = labeled.length ? [labeled[0], labeled[labeled.length-1]] : [];
+  } else {
+    [0, 1/3, 2/3, 1].forEach(function(f){
+      const target = padL + f*(w-padL-padR);
+      let best = labeled[0], bd = Infinity;
+      labeled.forEach(function(i){ const d = Math.abs(px(i)-target); if(d < bd){ bd = d; best = i; } });
+      if(xi.indexOf(best) < 0) xi.push(best);
+    });
+    xi.sort((a,b)=>a-b);
+  }
+  const spanX = (w-padL-padR) || 1;
+  const xHtml = xi.map(i=>{
+    const left = px(i)-padL, right = (w-padR)-px(i);
+    const an = left < spanX*0.06 ? "start" : (right < spanX*0.06 ? "end" : "middle");
+    return '<text x="'+px(i).toFixed(1)+'" y="'+(h-8)+'" text-anchor="'+an+'" font-size="10" fill="'+tc.axis+'">'+pts[i].t+'</text>';
+  }).join("");
   return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">'
     + '<defs><linearGradient id="'+uid+'" x1="0" y1="0" x2="0" y2="1">'
     + '<stop offset="0" stop-color="'+color+'" stop-opacity="0.22"/>'
     + '<stop offset="1" stop-color="'+color+'" stop-opacity="0"/>'
     + '</linearGradient></defs>'
     + '<path d="M '+area+'" fill="url(#'+uid+')"/>'
+    + wickHtml
     + '<polyline fill="none" stroke="'+color+'" stroke-width="5" opacity="0.12" stroke-linejoin="round" stroke-linecap="round" points="'+line+'"/>'
     + '<polyline fill="none" stroke="'+color+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="'+line+'"/>'
     + '<circle cx="'+px(n-1).toFixed(1)+'" cy="'+py(pts[n-1].v).toFixed(1)+'" r="3.5" fill="'+color+'" stroke="#fff" stroke-width="1.4"/>'
     + tickHtml + xHtml
-    + (fb ? '<text x="'+(w-2)+'" y="12" text-anchor="end" font-size="10" fill="'+tc.axis+'">'+fb+'</text>' : "")
+    + (fb ? '<text x="'+padL+'" y="12" text-anchor="start" font-size="10" fill="'+tc.axis+'">'+fb+'</text>' : "")
     + '</svg>';
 }
 
@@ -1755,6 +2060,15 @@ function renderNews(){
     : (newsCat==="pol" ? newsOrder(list).filter(function(i){ return isPol(i.t); })
     : list.filter(function(i){ return i.cat===newsCat; }));
   document.getElementById("newsList").innerHTML = show.length ? show.map(i=>newsItemHtml(i, true)).join("") : '<div class="empty">该分类暂无内容</div>';
+  /* 换分类（点标签或左右滑）：列表回到顶部，当前标签滚进可视范围 */
+  if(renderNews.__cat !== newsCat){
+    renderNews.__cat = newsCat;
+    const nl = document.getElementById("newsList"); if(nl) nl.scrollTop = 0;
+    if(catsEl){
+      const onb = catsEl.querySelector(".cat-btn.on");
+      if(onb) catsEl.scrollLeft = Math.max(0, onb.offsetLeft - (catsEl.clientWidth - onb.offsetWidth) / 2);
+    }
+  }
   document.getElementById("sheetMeta").textContent = "数据时间 " + fmtDate(now) + " " + pad(now.getHours()) + ":" + pad(now.getMinutes()) + " ｜ 点击条目打开原网站";
   document.querySelectorAll(".news-item").forEach(el=>{
     el.addEventListener("click", ()=>{
@@ -1895,7 +2209,379 @@ function addNews(items){
   newsStore = merged.slice(0, 300);
   renderNews();
   writeNewsCache(newsStore);
+  refreshLogic();
 }
+
+/* =========================================================
+   今日逻辑：把「池内的涨跌」和最近 60 小时（今天 + 昨天）的快讯对上号
+   输出结构（对不上快讯就明说，不编理由、不空话）：
+     大盘       指数当日表现 + 涨跌分化
+     领涨/领跌  每个方向取一条主线板块：板块名 + 组内幅度靠前的几只 + 能对上的快讯标题
+     点名       被快讯直接点名、且没在上面出现过的个股（最多 2 条）
+     看点       领涨、领跌分别压在哪条线上（资金从哪换到哪）
+   判定顺序 pickReason：direct（标题直接点名该票）> theme（标题命中该票所属板块关键词）> sector（只讲同板块联动）
+   ========================================================= */
+/* 页面里的 esc 是 newsItemHtml 的局部 const，这里补一个同名全局函数（函数声明与局部 const 不冲突） */
+function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+var STOCK_ALIAS = {
+  "sh601127":["赛力斯","问界"],"sz002594":["比亚迪"],"sz300750":["宁德时代"],
+  "sh601138":["工业富联","富士康"],"sz300308":["中际旭创","旭创"],"sz002475":["立讯精密","立讯"],
+  "sh688981":["中芯国际","中芯"],"hk00981":["中芯国际","中芯"],"sh688256":["寒武纪"],
+  "sz002371":["北方华创"],"sz002230":["科大讯飞","讯飞"],"sz002415":["海康威视","海康"],
+  "sh600519":["贵州茅台","茅台"],"sh601318":["中国平安"],"sh600036":["招商银行","招行"],
+  "sz300059":["东方财富"],"sh601012":["隆基绿能","隆基"],"sh601899":["紫金矿业","紫金"],
+  "sh600900":["长江电力"],"sh600309":["万华化学","万华"],"sz000333":["美的集团","美的"],
+  "sh600276":["恒瑞医药","恒瑞"],"sh600150":["中国船舶"],
+  "hk00700":["腾讯"],"hk09988":["阿里巴巴","阿里"],"usBABA":["阿里巴巴","阿里"],
+  "hk03690":["美团"],"hk01810":["小米"],"hk09618":["京东"],"hk01024":["快手"],
+  "hk01299":["友邦保险","友邦"],"hk02269":["药明生物","药明"],"hk09999":["网易"],
+  "hk09961":["携程"],"hk02020":["安踏"],"hk06862":["海底捞"],"hk02015":["理想汽车"],
+  "hk00388":["香港交易所","港交所"],"hk00941":["中国移动"],
+  "usNVDA":["英伟达"],"usAAPL":["苹果"],"usMSFT":["微软"],"usGOOGL":["谷歌"],
+  "usAMZN":["亚马逊"],"usMETA":["Meta"],"usTSLA":["特斯拉"],"usAMD":["AMD"],
+  "usINTC":["英特尔"],"usNFLX":["奈飞"],"usAVGO":["博通"],"usORCL":["甲骨文"],
+  "usPLTR":["Palantir"],"usMU":["美光"],"usQCOM":["高通"],"usSMCI":["超微电脑"],
+  "usPDD":["拼多多"],"usBILI":["哔哩哔哩"],"usPYPL":["PayPal"],"usCOIN":["Coinbase"],
+  "usUBER":["优步"],"usSHOP":["Shopify"],"usCRM":["赛富时"],"usADBE":["Adobe"],
+  "usDIS":["迪士尼"],"usNKE":["耐克"],"usWMT":["沃尔玛"],"usMA":["万事达"],
+  "usLLY":["礼来"],"usTSM":["台积电"],"usJPM":["摩根大通"]
+};
+var THEMES = [
+  {n:"AI 算力 / 芯片", k:["算力","英伟达","数据中心","服务器","光模块","CPO","液冷","存储芯片","HBM","晶圆","先进制程","大模型","ASIC","交换机"],
+   tx:["usNVDA","usAMD","usAVGO","usMU","usSMCI","usTSM","usINTC","usQCOM","usORCL","usMSFT","usGOOGL","usMETA","usAMZN","sh601138","sz300308","sh688981","hk00981","sz002371","sh688256","sz002230"]},
+  {n:"AI 应用 / 软件", k:["Copilot","大模型应用","AI 应用","办公软件","SaaS","数据分析","企业软件","数据智能"],
+   tx:["usPLTR","usCRM","usADBE","usORCL","usMSFT","usGOOGL","sz002230","usMETA"]},
+  {n:"消费电子 / 果链", k:["苹果","iPhone","消费电子","果链","折叠屏","鸿蒙","穿戴设备"],
+   tx:["usAAPL","usQCOM","sz002475","hk01810"]},
+  {n:"新能源车 / 电池", k:["新能源车","电动车","车企","电池","锂电","锂矿","特斯拉","智驾","辅助驾驶","以旧换新","充电桩","固态电池"],
+   tx:["usTSLA","sz002594","sz300750","sh601127","hk02015"]},
+  {n:"互联网 / 电商", k:["平台经济","直播带货","短视频","反垄断","消费复苏","双十一","外卖","即时零售"],
+   tx:["usBABA","usPDD","usBILI","hk09988","hk09618","hk03690","hk01024","hk00700","usSHOP","usAMZN"]},
+  {n:"美联储 / 流动性", k:["美联储","降息","加息","鲍威尔","非农","CPI","PCE","美债","收益率","美元指数","缩表","议息","通胀数据"],
+   tx:["usIXIC","usINX","usDJI","usJPM","usMA","usLLY","hk01299","hk00388","usPYPL"]},
+  {n:"关税 / 地缘", k:["关税","贸易摩擦","制裁","出口管制","实体清单","台海","海峡","军演","地缘"],
+   tx:["usNVDA","usAAPL","usTSM","sh688981","hk00981","sh600150","sh601138","sz300308"]},
+  {n:"医药 / 创新药", k:["创新药","集采","FDA","临床","减肥药","GLP-1","疫苗","CXO","医保谈判"],
+   tx:["usLLY","sh600276","hk02269"]},
+  {n:"光伏 / 电力", k:["光伏","硅料","风电","储能","电网","核电","绿电"],
+   tx:["sh601012","sh600900","sz300750"]},
+  {n:"金融 / 券商", k:["券商","降准","存款利率","印花税","IPO","两融","公募","成交额"],
+   tx:["sz300059","sh601318","sh600036","hk01299","hk00388","usJPM","usMA","usPYPL","usCOIN"]},
+  {n:"消费 / 白酒", k:["白酒","免税","零售","餐饮","运动服饰","旅游"],
+   tx:["sh600519","hk06862","hk02020","usNKE","usWMT","usDIS","hk09961","hk03690"]},
+  {n:"通信 / 运营商", k:["运营商","5G","6G","物联网","卫星","算力网络","光通信"],
+   tx:["hk00941","hk00700","sz300308"]},
+  {n:"传媒 / 游戏", k:["版号","影视","短剧","游戏出海"],
+   tx:["hk00700","hk09999","usNFLX","usDIS","hk01024"]},
+  {n:"有色 / 大宗", k:["黄金","白银","铜价","铝","原油","油价","大宗商品","稀土"],
+   tx:["sh601899","sh600309","sh600150"]}
+];
+var logicState = null;
+
+function newsClock(it){
+  var s = String((it && it.time) || "");
+  return s.length >= 16 ? s.slice(0, 16) : s.slice(0, 10);
+}
+function logicNewsPool(){
+  var d = new Date(Date.now() - 60 * 3600 * 1000);
+  var cut = d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  return newsStore.filter(function(it){
+    if(!it || !it.t || !it.url) return false;
+    if(it.cat === "spo" || it.cat === "ent") return false;
+    var c = newsClock(it);
+    return c.length >= 16 ? c >= cut : true;
+  });
+}
+function aliasList(pool){
+  return [pool.name].concat(STOCK_ALIAS[pool.tx] || []).filter(function(x){ return x && x.length >= 2; });
+}
+function themesOf(tx){
+  var out = [];
+  THEMES.forEach(function(T){ if(T.tx.indexOf(tx) >= 0) out.push(T); });
+  return out;
+}
+/* 一只票归到哪条线（取第一条命中的主题，页面里主题按相关性排序） */
+function topicOf(item){
+  var t = themesOf(item.pool.tx);
+  return t.length ? t[0].n : "";
+}
+/* 摘要行里只写主打的那半条线：「新能源车 / 电池」→「新能源车」 */
+function shortTopic(n){ return String(n || "").split("/")[0].trim(); }
+/* 有「动作」的快讯才算线索：只说「某官员演讲提到人工智能」这种不构成涨跌原因 */
+var SIGNAL = ["涨停","跌停","大涨","大跌","重挫","跳水","回落","走高","走低","反弹","创新高","创新低",
+  "业绩","预增","预减","净利","营收","订单","中标","签约","收购","并购","重组","停产","减产","扩产",
+  "涨价","降价","回购","增持","减持","立案","调查","罚款","退市","问询","关税","管制","实体清单","制裁",
+  "降息","加息","降准","补贴","获批","上市","解禁","停牌","净买","净卖","成交额","评级","目标价","上调","下调",
+  "砍单","抛售","放缓","停工","召回"];
+/* 快讯语气：上涨的板块要配「利好」类快讯，下跌的板块要配「利空」类快讯。
+   语气相反的（比如跌的票配一条「上调目标价」）不许当原因，宁可说没有。 */
+var TONE_UP = ["上涨","大涨","涨停","创新高","新高","走高","回升","反弹","利好","超预期","好于预期",
+  "增长","预增","扭亏","中标","订单","签约","中标","合作","获批","量产","交付","扩张","扩产","提价",
+  "涨价","回购","增持","上调","提高目标价","降息","降准","补贴","突破","放量"];
+var TONE_DOWN = ["下跌","大跌","跌停","创新低","新低","走低","回落","跳水","重挫","利空","不及预期",
+  "差于预期","下滑","下降","预减","亏损","裁员","减产","停产","减持","调查","处罚","罚款","退市","问询",
+  "立案","下调","降低目标价","加息","关税","制裁","出口管制","实体清单","召回","放缓","承压","重罚",
+  "砍单","抛售"];
+function toneOf(t){
+  var cu = 0, cd = 0, i;
+  for(i = 0; i < TONE_UP.length; i++){ if(t.indexOf(TONE_UP[i]) >= 0) cu++; }
+  for(i = 0; i < TONE_DOWN.length; i++){ if(t.indexOf(TONE_DOWN[i]) >= 0) cd++; }
+  return cu > cd ? 1 : (cd > cu ? -1 : 0);
+}
+function tuneHead(t, want){ var v = toneOf(t); return v === 0 || v === want; }
+
+function pickReason(item, all, news, used){
+  var pool = item.pool, alias = aliasList(pool), ths = themesOf(pool.tx);
+  var poolNames = [];
+  (all || []).forEach(function(o){ if(poolNames.indexOf(o.pool.name) < 0) poolNames.push(o.pool.name); });
+  var named = null, themed = null;
+  news.forEach(function(n){
+    var t = String(n.t || ""), i;
+    if(used && used[t]) return;                 /* 同一条快讯不重复引用 */
+    var sig = 0;
+    for(i=0;i<SIGNAL.length;i++){ if(t.indexOf(SIGNAL[i]) >= 0){ sig = 1; break; } }
+    var other = 0;
+    for(i=0;i<poolNames.length;i++){ if(t.indexOf(poolNames[i]) >= 0){ other = 1; break; } }
+    /* 1) 标题直接点名这只票（有动作词的优先） */
+    for(i=0;i<alias.length;i++){
+      if(t.indexOf(alias[i]) >= 0){
+        var s1 = 100 + alias[i].length + (sig ? 8 : 0);
+        if(!named || s1 > named.score) named = {score: s1, kind: "direct", kw: alias[i], n: n};
+        return;
+      }
+    }
+    /* 2) 板块关键词命中：取最长命中词，并要求「够具体」——
+          长度 >=4 才算分、含动作词 +6、标题里出现池内公司名 +5；低于 7 分不当作原因 */
+    for(var j=0;j<ths.length;j++){
+      var kws = ths[j].k, hit = "";
+      for(var k=0;k<kws.length;k++){
+        if(t.indexOf(kws[k]) >= 0 && kws[k].length > hit.length) hit = kws[k];
+      }
+      if(hit){
+        var sc = hit.length + (sig ? 6 : 0) + (other ? 5 : 0);
+        /* 命中词越长越可信；两三个字的行业词必须再配上「动作」或池内公司名 */
+        var ok = (hit.length >= 4 && sc >= 7) || (hit.length === 3 && sig) || (hit.length <= 2 && sig && other);
+        if(ok && (!themed || sc > themed.score)){
+          themed = {score: sc, kind: "theme", kw: hit, th: ths[j].n, n: n};
+        }
+        return;
+      }
+    }
+  });
+  if(named) return named;
+  if(themed) return themed;
+  return sectorReason(item, all, ths);
+}
+/* 没有快讯时只能说板块联动：同主题、同方向、幅度靠前的兄弟 */
+function sectorReason(item, all, ths){
+  var peers = [];
+  if(ths.length){
+    var set = ths[0].tx;
+    all.forEach(function(o){
+      if(o.pool.tx === item.pool.tx) return;
+      if(set.indexOf(o.pool.tx) < 0) return;
+      if(o.isUp !== item.isUp) return;
+      peers.push(o);
+    });
+    peers.sort(function(a,b){ return Math.abs(b.q.pct) - Math.abs(a.q.pct); });
+  }
+  return {score: 0, kind: "sector", peers: peers.slice(0,3), th: ths.length ? ths[0].n : ""};
+}
+/* 同方向里按板块聚组：至少 2 只同主题才算一条「线」，组间按组内最强幅度排序 */
+function themeGroups(items){
+  var gs = [];
+  items.forEach(function(it){
+    var k = topicOf(it);
+    if(!k) return;
+    var g = null, i;
+    for(i = 0; i < gs.length; i++){ if(gs[i].n === k){ g = gs[i]; break; } }
+    if(!g){ g = {n:k, items:[]}; gs.push(g); }
+    g.items.push(it);
+  });
+  gs = gs.filter(function(g){ return g.items.length >= 2; });
+  gs.forEach(function(g){
+    g.items.sort(function(a,b){ return Math.abs(b.q.pct) - Math.abs(a.q.pct); });
+    g.lead = Math.abs(g.items[0].q.pct);
+  });
+  gs.sort(function(a,b){ return b.lead - a.lead; });
+  return gs;
+}
+function pctSpan(it, tc){
+  var c = it.isUp ? tc.up : tc.down;
+  return '<span style="color:' + c + '">' + fmtPct(it.q.pct) + '</span>';
+}
+/* 在一条板块线里挑一条能当原因的快讯：直接点名优先，其次板块关键词；
+   语气和涨跌方向相反的（跌的线配「上调目标价」）一律不要 */
+function pickCite(g, want, all, news, used){
+  var best = null;
+  g.items.forEach(function(it){
+    var r = pickReason(it, all, news, used);
+    if(!r || (r.kind !== "direct" && r.kind !== "theme")) return;
+    var t = String(r.n.t || "");
+    if(!tuneHead(t, want)) return;
+    var rank = (r.kind === "direct" ? 20 : 10) + (toneOf(t) === want ? 3 : 0);
+    if(!best || rank > best.rank) best = {r: r, it: it, rank: rank};
+  });
+  return best;
+}
+/* 一条板块线：板块名 + 组内幅度靠前的几只 + 能对上的那条快讯（对不上就明说） */
+function groupLineHtml(g, dir, tc, all, news, used, bag, shown){
+  var want = dir === "领涨" ? 1 : -1;
+  var c0 = pickCite(g, want, all, news, used);
+  var cite = c0 ? c0.r : null, citeItem = c0 ? c0.it : null;
+  var mem = g.items.slice(0, 3);
+  if(citeItem && mem.indexOf(citeItem) < 0) mem = mem.slice(0, 2).concat([citeItem]);
+  var who = mem.map(function(it){
+    shown[it.pool.tx] = 1;
+    return esc(it.pool.name) + " " + pctSpan(it, tc);
+  }).join("、");
+  var tail;
+  if(cite){
+    bag.push(cite);
+    if(used) used[String(cite.n.t || "")] = 1;
+    tail = '<i class="logic-kw">「' + esc(String(cite.n.t).slice(0, 34)) + '」</i><em>'
+      + esc(newsClock(cite.n).slice(5, 16)) + (cite.kind === "direct" ? " · 直接点名" : " · " + esc(cite.kw)) + '</em>';
+  } else {
+    tail = '<span class="logic-none">今天没有对得上的快讯，属于板块自己' + (dir === "领涨" ? "走强" : "走弱") + '。</span>';
+  }
+  return '<div class="logic-line"><span class="logic-k">' + dir + '</span>'
+    + '<b class="logic-topic">' + esc(g.n) + '</b> ' + who + ' ' + tail + '</div>';
+}
+/* 一个方向凑不出板块（只有单只）时，单看这一只自己：有快讯就引，没有就说没有 */
+function soloLineHtml(item, dir, all, news, tc, bag, used, shown){
+  var want = item.isUp ? 1 : -1;
+  var r = pickReason(item, all, news, used);
+  if((r.kind === "direct" || r.kind === "theme") && !tuneHead(String(r.n.t || ""), want)){
+    r = sectorReason(item, all, themesOf(item.pool.tx));
+  }
+  shown[item.pool.tx] = 1;
+  var head = '<span class="logic-k">' + dir + '</span><b>' + esc(item.pool.name) + '</b> ' + pctSpan(item, tc) + ' ';
+  var body;
+  if(r.kind === "direct" || r.kind === "theme"){
+    bag.push(r);
+    if(used) used[String(r.n.t || "")] = 1;
+    body = (r.kind === "direct" ? "被快讯点名：" : "同板块线索（" + esc(r.th) + " · " + esc(r.kw) + "）：")
+      + '<i class="logic-kw">「' + esc(String(r.n.t).slice(0, 34)) + '」</i><em>'
+      + esc(newsClock(r.n).slice(5, 16)) + '</em>';
+  } else if(r.peers && r.peers.length){
+    body = '<span class="logic-none">没有对得上的快讯，同板块同向的是 '
+      + r.peers.map(function(p){ return esc(p.pool.name) + " " + fmtPct(p.q.pct); }).join("、") + '。</span>';
+  } else {
+    body = '<span class="logic-none">没有对得上的快讯，也没看出板块联动，更像个股自己的事。</span>';
+  }
+  return '<div class="logic-line">' + head + body + '</div>';
+}
+function renderLogic(){
+  var box = document.getElementById("mktLogic");
+  if(!box) return;
+  if(!logicState){ box.innerHTML = ""; return; }
+  var st = logicState, tc = themeColors();
+  var news = logicNewsPool();
+  var bag = [], used = {}, shown = {};
+  var upG = themeGroups(st.ups), downG = themeGroups(st.downs);
+  var upLine = upG.length
+    ? groupLineHtml(upG[0], "领涨", tc, st.all, news, used, bag, shown)
+    : st.ups.slice(0, 2).map(function(it){ return soloLineHtml(it, "领涨", st.all, news, tc, bag, used, shown); }).join("");
+  var downLine = downG.length
+    ? groupLineHtml(downG[0], "领跌", tc, st.all, news, used, bag, shown)
+    : st.downs.slice(0, 2).map(function(it){ return soloLineHtml(it, "领跌", st.all, news, tc, bag, used, shown); }).join("");
+  /* 点名：被快讯直接点名、且没在上面出现过的个股（最多 2 条） */
+  var named = [];
+  st.ups.concat(st.downs).forEach(function(it){
+    if(named.length >= 2 || shown[it.pool.tx]) return;
+    var r = pickReason(it, st.all, news, used);
+    if(r && r.kind === "direct" && tuneHead(String(r.n.t || ""), it.isUp ? 1 : -1)){
+      bag.push(r);
+      if(used) used[String(r.n.t || "")] = 1;
+      named.push('<div class="logic-line"><span class="logic-k">点名</span><b>' + esc(it.pool.name) + '</b> '
+        + pctSpan(it, tc) + ' <i class="logic-kw">「' + esc(String(r.n.t).slice(0, 34)) + '」</i><em>'
+        + esc(newsClock(r.n).slice(5, 16)) + ' · 快讯点名</em></div>');
+    }
+  });
+  /* 大盘 */
+  var idx = st.idx.filter(function(i){ return i && i.q && isFinite(i.q.pct); });
+  var upN = idx.filter(function(i){ return i.isUp; }).length;
+  var tone = idx.length
+    ? idx.slice(0, 4).map(function(i){ return esc(i.pool.name) + " " + pctSpan(i, tc); }).join("、")
+      + (upN === idx.length ? "（全线走高）" : upN === 0 ? "（全线走低）" : "（涨跌分化）")
+    : '<span class="logic-none">指数数据还没到。</span>';
+  /* 看点：领涨、领跌分别压在哪条线上 */
+  var upTop = upG.length ? upG[0].n : (st.ups[0] ? topicOf(st.ups[0]) : "");
+  var downTop = downG.length ? downG[0].n : (st.downs[0] ? topicOf(st.downs[0]) : "");
+  var view = "";
+  if(upLine && downLine && upTop && downTop){
+    if(upTop !== downTop){
+      view = '今天的钱在两条线之间换手：一头是 <b>' + esc(upTop) + '</b>，另一头是 <b>' + esc(downTop) + '</b>。';
+    } else {
+      view = '涨跌都压在 <b>' + esc(upTop) + '</b> 这条线上，板块内部在分化，主要看个股自己的消息面。';
+    }
+  }
+  /* 收起时的一行摘要：大盘什么调子 · 领涨哪条线 · 领跌哪条线 */
+  var mood = idx.length
+    ? (upN === idx.length ? "全线走高" : upN === 0 ? "全线走低" : "涨跌分化")
+    : "指数还没到";
+  var upName = upTop || (st.ups[0] ? st.ups[0].pool.name : "");
+  var downName = downTop || (st.downs[0] ? st.downs[0].pool.name : "");
+  var brief = '<span class="logic-k">大盘</span>' + mood
+    + ' · <span class="logic-k">领涨</span><span style="color:' + tc.up + '">' + esc(upName ? shortTopic(upName) : "--") + '</span>'
+    + ' · <span class="logic-k">领跌</span><span style="color:' + tc.down + '">' + esc(downName ? shortTopic(downName) : "--") + '</span>';
+
+  var subTxt = news.length
+    ? "对照最近 60 小时 " + news.length + " 条快讯 · 池内 " + st.ups.length + " 涨 / " + st.downs.length + " 跌"
+    : "快讯还没到，先看板块联动";
+  var html = '<div class="logic-hd"><b>今日逻辑</b>'
+    + '<button class="logic-toggle" id="logicToggle"><span class="logic-caret">›</span> <span class="logic-tg-t">展开</span></button></div>';
+  html += '<div class="logic-brief" id="logicBrief">' + brief + '</div>';
+  html += '<div class="logic-body" id="logicBody" hidden><div class="logic-sub">' + subTxt + '</div>';
+  html += '<div class="logic-line"><span class="logic-k">大盘</span>' + tone + '</div>';
+  html += upLine + downLine;
+  html += named.join("");
+  if(view) html += '<div class="logic-line"><span class="logic-k">看点</span>' + view + '</div>';
+  if(bag.length){
+    html += '<div class="logic-more" id="logicMore">展开 ' + bag.length + ' 条依据 <span class="logic-caret">›</span></div>';
+    html += '<div class="logic-quotes" id="logicQuotes" hidden>' + bag.map(function(r){
+      return '<button class="logic-quote" data-url="' + esc(r.n.url) + '" data-t="' + esc(r.n.t) + '" data-f="' + esc(r.n.full || "") + '">'
+        + '<span class="logic-quote-t">' + esc(r.n.t) + '</span>'
+        + '<span class="logic-quote-m">' + esc(newsClock(r.n).slice(5, 16)) + ' · '
+        + (r.kind === "direct" ? "点名" : esc(r.th || "板块")) + '</span></button>';
+    }).join("") + '</div>';
+  }
+  html += '<div class="logic-foot">依据 = 快讯原文 + 同板块联动，不是定论；点标题看原文。</div></div>';
+  box.innerHTML = html;
+  /* 收起/展开：状态记住，下次进来还是上次那样 */
+  var body = document.getElementById("logicBody"), tg = document.getElementById("logicToggle"), bf = document.getElementById("logicBrief");
+  var open = false;
+  try{ open = localStorage.getItem("urokLogicOpen") === "1"; }catch(e){}
+  function setOpen(v){
+    if(!body) return;
+    body.hidden = !v;
+    if(tg){
+      tg.classList.toggle("on", v);
+      var lab = tg.querySelector(".logic-tg-t");
+      if(lab) lab.textContent = v ? "收起" : "展开";
+    }
+    try{ localStorage.setItem("urokLogicOpen", v ? "1" : "0"); }catch(e){}
+  }
+  setOpen(open);
+  [tg, bf].forEach(function(el){
+    if(el) el.addEventListener("click", function(){ setOpen(!!body && body.hidden); });
+  });
+  var more = document.getElementById("logicMore"), qs = document.getElementById("logicQuotes");
+  if(more && qs){
+    more.addEventListener("click", function(){
+      qs.hidden = !qs.hidden;
+      more.classList.toggle("on", !qs.hidden);
+    });
+    qs.addEventListener("click", function(e){
+      var b = e.target.closest(".logic-quote");
+      if(b) openNewsReader(b.dataset.url || "", b.dataset.t || "", b.dataset.f || "");
+    });
+  }
+}
+function refreshLogic(){ try{ renderLogic(); }catch(e){} }
+
 function emLoad(col){
   return new Promise(function(resolve){
     try{ delete window.ajax; }catch(e){}
@@ -1952,6 +2638,17 @@ function closeNewsSheet(){
   document.getElementById("newsMask").hidden = true;
   document.body.classList.remove("lock-scroll");
 }
+
+/* ---- 现在时间线：每分钟自己走一格；正在输入/编辑时不打断 ---- */
+let nowSig = Math.floor(Date.now()/60000);
+setInterval(function(){
+  const sig = Math.floor(Date.now()/60000);
+  if(sig === nowSig) return;
+  nowSig = sig;
+  const box = document.getElementById("todayList");
+  if(!box || box.querySelector("input") || box.querySelector(".plan-edit")) return;
+  try{ renderToday(); }catch(e){}
+}, 20000);
 
 /* ---- 启动 ---- */
 function renderAll(){
@@ -2233,7 +2930,7 @@ renderAll();
 <script>
 /* ===== 添加计划面板 ===== */
 (function(){
-  var mask=null, listEl=null, inputEl=null, mgrBtn=null, editMode=false, built=false;
+  var mask=null, listEl=null, inputEl=null, mgrBtn=null, titleEl=null, hintEl=null, editMode=false, built=false, pendingSlot="", pendingLabel="";
   function el(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
   function chipsList(){ try{ return (typeof chips==="function") ? chips() : []; }catch(e){ return []; } }
   function build(){
@@ -2242,9 +2939,12 @@ renderAll();
     var sheet = el("div","ps-sheet");
     sheet.appendChild(el("div","ps-bar"));
     var head = el("div","ps-head");
-    head.appendChild(el("div","ps-title","添加计划"));
+    titleEl = el("div","ps-title","添加计划");
+    head.appendChild(titleEl);
     sheet.appendChild(head);
     var sub = el("div","ps-sub");
+    hintEl = el("span","ps-subtxt","");
+    sub.appendChild(hintEl);
     mgrBtn = el("button","ps-mgr","管理"); mgrBtn.id="psMgr";
     sub.appendChild(mgrBtn); sheet.appendChild(sub);
     listEl = el("div","ps-chips"); listEl.id="psChips";
@@ -2302,7 +3002,7 @@ renderAll();
     box.appendChild(inp); box.appendChild(okb);
     btn.parentNode.replaceChild(box, btn);
     inp.focus();
-    function commit(){ var v=String(inp.value||"").trim(); if(v) addChip(v); renderChips(); }
+    function commit(){ var v=String(inp.value||"").trim(); if(!v) return; addChip(v); if(pendingSlot){ addPlan(pendingSlot, v, true); renderChips(); closePanel(); return; } renderChips(); }
     okb.addEventListener("click", function(e){ e.stopPropagation(); commit(); });
     inp.addEventListener("click", function(e){ e.stopPropagation(); });
     inp.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); commit(); } });
@@ -2320,26 +3020,35 @@ renderAll();
     if(nw){ startNew(nw); return; }
     var add = t.closest("[data-add]");
     if(add){
-      addPlan("", add.getAttribute("data-add"));
+      var pv = add.getAttribute("data-add");
+      if(pendingSlot){ addPlan(pendingSlot, pv, true); renderChips(); closePanel(); return; }
+      addPlan("", pv);
       renderChips();
-      try{ toast("已加入今天：" + add.getAttribute("data-add")); }catch(e2){}
+      try{ toast("已加入今天：" + pv); }catch(e2){}
       closePanel();
     }
   }
-  function openPanel(){
-    build();
-    editMode = false;
-    if(mgrBtn) mgrBtn.textContent = "管理";
-    if(inputEl) inputEl.value = "";
-    renderChips();
-    mask.hidden = false;
-  }
-  function closePanel(){ if(mask) mask.hidden = true; }
+function updHead(){
+if(titleEl) titleEl.textContent = pendingSlot ? "排到空档 " + pendingLabel : "添加计划";
+if(hintEl) hintEl.textContent = pendingSlot ? "点一下就排进去 · 以后每周这个时段自动出现" : "";
+}
+function show(){
+build();
+editMode = false;
+if(mgrBtn) mgrBtn.textContent = "管理";
+if(inputEl) inputEl.value = "";
+renderChips();
+updHead();
+mask.hidden = false;
+}
+function openPanel(){ pendingSlot = ""; pendingLabel = ""; show(); }
+function openSlot(slot, label){ pendingSlot = slot || ""; pendingLabel = label || ""; show(); }
+function closePanel(){ if(mask) mask.hidden = true; }
   document.addEventListener("click", function(e){
     var t = e.target;
     if(t && t.closest && t.closest('[data-act="openadd"]')) openPanel();
   }, true);
-  window.__addPanel = {open: openPanel, close: closePanel};
+  window.__addPanel = {open: openPanel, close: closePanel, openSlot: openSlot};
 })();
 </script>
 <script>
@@ -2449,6 +3158,8 @@ renderAll();
       dx = cx - x0; dy = cy - y0;
       var d = vert ? dy : dx;
       if(!moved){
+        /* 横向为主的滑动（左右滑新闻分类、滑横向列表）交给页面自己处理，别把面板拖着走 */
+        if(vert && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy) * 1.2){ on = false; return false; }
         if(d < -8){ on = false; return false; }
         if(Math.abs(d) < 3) return false;
         if(blocked || (!handle && scrolledDeep(tgt, mask, !vert))){ on = false; return false; }
@@ -2526,6 +3237,49 @@ renderAll();
   }
   window.__iosSheets = {refresh: scan};
 
+})();
+</script>
+<script>
+/* ===== 新闻速递：在列表上左右滑 = 切换分类（和点标签等价） ===== */
+(function(){
+  var list = document.getElementById("newsList");
+  if(!list) return;
+  var x0 = 0, y0 = 0, dx = 0, on = false, axis = "";
+  function idx(){
+    for(var i=0;i<NEWS_CATS.length;i++){ if(NEWS_CATS[i][0] === newsCat) return i; }
+    return -1;
+  }
+  function go(dir){
+    var i = idx(); if(i < 0) return;
+    var j = i + dir;
+    if(j < 0 || j >= NEWS_CATS.length) return;
+    newsCat = NEWS_CATS[j][0];
+    try{ renderNews(); }catch(e){ return; }
+    list.classList.remove("pg-l", "pg-r");
+    void list.offsetWidth;
+    list.classList.add(dir > 0 ? "pg-l" : "pg-r");
+    setTimeout(function(){ try{ list.classList.remove("pg-l", "pg-r"); }catch(e){} }, 300);
+  }
+  list.addEventListener("touchstart", function(e){
+    if(e.touches.length !== 1) return;
+    var t = e.touches[0];
+    x0 = t.clientX; y0 = t.clientY; dx = 0; axis = ""; on = true;
+  }, {passive:true});
+  list.addEventListener("touchmove", function(e){
+    if(!on) return;
+    var t = e.touches[0], ax = t.clientX - x0, ay = t.clientY - y0;
+    if(!axis && (Math.abs(ax) > 8 || Math.abs(ay) > 8)){
+      axis = (Math.abs(ax) > Math.abs(ay) * 1.2) ? "x" : "y";
+    }
+    if(axis === "x"){ dx = ax; if(e.cancelable) e.preventDefault(); }
+  }, {passive:false});
+  function fin(){
+    if(!on) return;
+    on = false;
+    if(axis === "x" && Math.abs(dx) > 55) go(dx < 0 ? 1 : -1);
+  }
+  list.addEventListener("touchend", fin, {passive:true});
+  list.addEventListener("touchcancel", function(){ on = false; }, {passive:true});
 })();
 </script>
 <script>
