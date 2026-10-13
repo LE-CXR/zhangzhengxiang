@@ -56,7 +56,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .next-tip .nt-ic{flex:none;width:25px;height:25px;border-radius:9px;display:grid;place-items:center;color:var(--nt,#da7756);background:rgba(218,119,86,.16);background:color-mix(in srgb,var(--nt,#da7756) 18%,transparent)}
 .next-tip .nt-body{min-width:0;display:flex;flex-direction:column;gap:1px;line-height:1.22}
 .next-tip .nt-when{align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;font-weight:800;letter-spacing:.2px;color:var(--nt,#da7756);background:rgba(218,119,86,.16);background:color-mix(in srgb,var(--nt,#da7756) 18%,transparent);padding:2px 6px;border-radius:999px;margin-bottom:1px}
-.next-tip .nt-room{font-size:13.5px;font-weight:800;color:var(--nt,#da7756);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-tip .nt-room{max-width:100%;overflow:hidden;position:relative;display:block}
+.next-tip .nt-track{display:inline-flex;align-items:baseline;white-space:nowrap;will-change:transform}
+.next-tip .nt-loc{font-size:14px;font-weight:800;color:var(--nt,#da7756);letter-spacing:.1px}
+.next-tip .nt-sep{margin:0 5px;font-size:11px;font-weight:800;color:var(--nt,#da7756);opacity:.34}
+.next-tip .nt-time{font-size:12.5px;font-weight:700;color:var(--nt,#da7756);opacity:.68}
+.next-tip .nt-room.is-marquee{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%)}
+.next-tip .nt-room.is-marquee .nt-track{animation:ntScroll var(--nt-dur,9s) ease-in-out infinite}
+@keyframes ntScroll{0%,11%{transform:translateX(0)}46%,54%{transform:translateX(calc(-1 * var(--nt-dx,0px)))}89%,100%{transform:translateX(0)}}
+@media (prefers-reduced-motion: reduce){.next-tip .nt-room.is-marquee .nt-track{animation:none}}
 .next-tip .nt-sub{font-size:11.5px;color:var(--nt,#da7756);opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @keyframes ntIn{from{opacity:0;transform:translateY(-4px) scale(.96)}to{opacity:1;transform:none}}
 
@@ -550,7 +558,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-13.f3</div>
+    <div class="cs-ver">2026-10-13.f4</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -714,10 +722,34 @@ function nextTipHtml(nx, left){
    + 'stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
    + '<span class="nt-body">'
    + '<span class="nt-when">' + whenTxt + ' · ' + tone + '</span>'
-   + '<span class="nt-room">' + nx.start + ' · ' + esc2(nx.loc) + '</span>'
+   + '<span class="nt-room"><span class="nt-track">'
+   + '<span class="nt-loc">' + esc2(nx.loc) + '</span>'
+   + '<span class="nt-sep">·</span>'
+   + '<span class="nt-time">' + nx.start + '</span>'
+   + '</span></span>'
    + '<span class="nt-sub">' + esc2(nx.teacher) + '</span>'
    + '</span>';
 }
+
+/* 教室名太长：头尾淡出 + 自动来回滚动 */
+function armTipMarquee(){
+  const tip = document.getElementById("nextTip");
+  if(!tip || tip.hidden) return;
+  const room = tip.querySelector(".nt-room"), track = tip.querySelector(".nt-track");
+  if(!room || !track) return;
+  room.classList.remove("is-marquee");
+  const dx = Math.ceil(track.getBoundingClientRect().width - room.clientWidth);
+  if(dx < 8) return;
+  room.style.setProperty("--nt-dx", dx + "px");
+  room.style.setProperty("--nt-dur", Math.min(15, Math.max(7, Math.round(dx / 9) + 6)) + "s");
+  room.classList.add("is-marquee");
+}
+let __ntResizeT = 0;
+window.addEventListener("resize", function(){
+  clearTimeout(__ntResizeT);
+  __ntResizeT = setTimeout(armTipMarquee, 180);
+});
+
 
 function renderNextTip(list){
   const tip = document.getElementById("nextTip");
@@ -730,6 +762,10 @@ function renderNextTip(list){
   tip.style.setProperty("--nt", colorOf(nx));
   tip.innerHTML = html;
   tip.hidden = false;
+  /* 字体和布局落定后再判定一次：字体还没生效时量出来偏窄，会误判成「放得下」 */
+  armTipMarquee();
+  setTimeout(armTipMarquee, 450);
+  try{ document.fonts.ready.then(armTipMarquee); }catch(e){}
 }
 function nowLineHtml(){ return '<div class="now-line"><span class="now-dot"></span><span class="now-txt">现在 '+m2hm(nowMin())+'</span><span class="now-rule"></span></div>'; }
 function courseHtml(c, isNow){
