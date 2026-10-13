@@ -51,11 +51,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 /* 今日课程表头：周徽标 + 下节课提醒（颜色取该门课的颜色） */
 .today-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
 .today-row .today-meta{margin-bottom:0}
-.next-tip{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:0;text-align:right;animation:ntIn .26s ease}
+.next-tip{flex:0 1 auto;max-width:70%;min-width:0;display:flex;align-items:center;gap:8px;padding:6px 10px 7px 8px;border-radius:14px;background:rgba(218,119,86,.10);background:color-mix(in srgb,var(--nt,#da7756) 11%,transparent);box-shadow:inset 0 0 0 1px rgba(218,119,86,.20);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--nt,#da7756) 24%,transparent);animation:ntIn .3s cubic-bezier(.22,1,.36,1)}
 .next-tip[hidden]{display:none}
-.next-tip b{font-size:13.5px;font-weight:800;color:var(--nt,#da7756);letter-spacing:.2px;white-space:nowrap}
-.next-tip span{font-size:11.5px;color:var(--nt,#da7756);opacity:.72;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@keyframes ntIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.next-tip .nt-ic{flex:none;width:25px;height:25px;border-radius:9px;display:grid;place-items:center;color:var(--nt,#da7756);background:rgba(218,119,86,.16);background:color-mix(in srgb,var(--nt,#da7756) 18%,transparent)}
+.next-tip .nt-body{min-width:0;display:flex;flex-direction:column;gap:1px;line-height:1.22}
+.next-tip .nt-when{align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;font-weight:800;letter-spacing:.2px;color:var(--nt,#da7756);background:rgba(218,119,86,.16);background:color-mix(in srgb,var(--nt,#da7756) 18%,transparent);padding:2px 6px;border-radius:999px;margin-bottom:1px}
+.next-tip .nt-room{font-size:13.5px;font-weight:800;color:var(--nt,#da7756);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-tip .nt-sub{font-size:11.5px;color:var(--nt,#da7756);opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes ntIn{from{opacity:0;transform:translateY(-4px) scale(.96)}to{opacity:1;transform:none}}
 
 /* 现在时间线（iOS 日历风）：一条橙线 + 左侧圆点 + 时间 */
 .now-line{display:flex;align-items:center;gap:8px;margin:2px 2px 6px}
@@ -547,7 +550,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-12.f2</div>
+    <div class="cs-ver">2026-10-13.f3</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -701,12 +704,21 @@ function leftTxt(m){
 const NEXT_WARN = 25;
 function nextTipHtml(nx, left){
   if(!nx || left < 0 || left > NEXT_WARN) return "";
-  const tail = left <= 5 ? ("就剩 " + left + " 分钟，快跑！")
-    : left <= 10 ? ("还有 " + left + " 分钟，该动身了")
-    : left <= 18 ? ("还有 " + left + " 分钟，收拾一下")
-    : ("还有 " + left + " 分钟，不慌");
-  return '<b>'+nx.start+' · '+esc2(nx.loc)+'</b><span>'+esc2(nx.teacher)+' · '+tail+'</span>';
+  /* 语气跟着剩余时间走，越近越催；语气并进倒计时胶囊，教师单独一行不截断 */
+  const tone = left <= 5 ? "快跑" : left <= 10 ? "该动身了"
+    : left <= 18 ? "收拾一下" : "不慌";
+  const whenTxt = left <= 0 ? "马上开课" : ("还有 " + left + " 分钟");
+  return '<span class="nt-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none">'
+   + '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/>'
+   + '<path d="M12 7.4v5l3.2 2" stroke="currentColor" stroke-width="2.2" '
+   + 'stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+   + '<span class="nt-body">'
+   + '<span class="nt-when">' + whenTxt + ' · ' + tone + '</span>'
+   + '<span class="nt-room">' + nx.start + ' · ' + esc2(nx.loc) + '</span>'
+   + '<span class="nt-sub">' + esc2(nx.teacher) + '</span>'
+   + '</span>';
 }
+
 function renderNextTip(list){
   const tip = document.getElementById("nextTip");
   if(!tip) return;
