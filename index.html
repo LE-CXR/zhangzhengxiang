@@ -56,15 +56,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .next-tip .nt-ic{flex:none;width:25px;height:25px;border-radius:9px;display:grid;place-items:center;color:var(--nt,#da7756);background:rgba(218,119,86,.16);background:color-mix(in srgb,var(--nt,#da7756) 18%,transparent)}
 .next-tip .nt-body{min-width:0;display:flex;flex-direction:column;gap:1px;line-height:1.22}
 .next-tip .nt-when{align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;font-weight:800;letter-spacing:.2px;color:var(--nt,#da7756);background:rgba(218,119,86,.16);background:color-mix(in srgb,var(--nt,#da7756) 18%,transparent);padding:2px 6px;border-radius:999px;margin-bottom:1px}
-.next-tip .nt-room{max-width:100%;overflow:hidden;position:relative;display:block}
-.next-tip .nt-track{display:inline-flex;align-items:baseline;white-space:nowrap;will-change:transform}
+.next-tip .nt-room{display:flex;align-items:baseline;max-width:100%;min-width:0}
+.next-tip .nt-scroll{flex:1 1 auto;min-width:0;overflow:hidden;position:relative}
+.next-tip .nt-track{display:inline-flex;align-items:baseline;white-space:nowrap;padding:0 8px;will-change:transform}
 .next-tip .nt-loc{font-size:14px;font-weight:800;color:var(--nt,#da7756);letter-spacing:.1px}
-.next-tip .nt-sep{margin:0 5px;font-size:11px;font-weight:800;color:var(--nt,#da7756);opacity:.34}
-.next-tip .nt-time{font-size:12.5px;font-weight:700;color:var(--nt,#da7756);opacity:.68}
-.next-tip .nt-room.is-marquee{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%)}
-.next-tip .nt-room.is-marquee .nt-track{animation:ntScroll var(--nt-dur,9s) ease-in-out infinite}
+.next-tip .nt-sep{flex:none;margin:0 5px;font-size:11px;font-weight:800;color:var(--nt,#da7756);opacity:.34}
+.next-tip .nt-time{flex:none;font-size:12.5px;font-weight:700;color:var(--nt,#da7756);opacity:.68}
+.next-tip .nt-foot{display:flex;align-items:center;gap:5px;min-width:0;max-width:100%}
+.next-tip .nt-foot .nt-sub{flex:1 1 auto;min-width:0}
+.next-tip .nt-go{flex:none;display:grid;place-items:center;width:13px;height:13px;color:var(--nt,#da7756);opacity:.5}
+.next-tip:not([hidden]){cursor:pointer;-webkit-tap-highlight-color:transparent}
+.next-tip:not([hidden]):active{transform:scale(.985)}
+/* 只有教室名那一段滚动：两头各留 8px 内边距，停在两端时首尾字正好落在淡出区之外 */
+.next-tip .nt-scroll.is-marquee{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 8px,#000 calc(100% - 8px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 8px,#000 calc(100% - 8px),transparent 100%)}
+.next-tip .nt-scroll.is-marquee .nt-track{animation:ntScroll var(--nt-dur,9s) ease-in-out infinite}
 @keyframes ntScroll{0%,11%{transform:translateX(0)}46%,54%{transform:translateX(calc(-1 * var(--nt-dx,0px)))}89%,100%{transform:translateX(0)}}
-@media (prefers-reduced-motion: reduce){.next-tip .nt-room.is-marquee .nt-track{animation:none}}
+@media (prefers-reduced-motion: reduce){.next-tip .nt-scroll.is-marquee .nt-track{animation:none}}
+/* 跳到那节课时的高亮 */
+.t-item.is-jump{border-color:var(--accent);background-color:rgba(218,119,86,.12);background-color:color-mix(in srgb,var(--accent) 12%,var(--card2));box-shadow:0 0 0 2px rgba(218,119,86,.28),0 10px 24px -16px rgba(218,119,86,.6);transition:border-color .25s ease,box-shadow .25s ease,background-color .25s ease}
 .next-tip .nt-sub{font-size:11.5px;color:var(--nt,#da7756);opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @keyframes ntIn{from{opacity:0;transform:translateY(-4px) scale(.96)}to{opacity:1;transform:none}}
 
@@ -558,7 +567,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-13.f4</div>
+    <div class="cs-ver">2026-10-13.f5</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -712,7 +721,7 @@ function leftTxt(m){
 const NEXT_WARN = 25;
 function nextTipHtml(nx, left){
   if(!nx || left < 0 || left > NEXT_WARN) return "";
-  /* 语气跟着剩余时间走，越近越催；语气并进倒计时胶囊，教师单独一行不截断 */
+  /* 语气跟着剩余时间走，越近越催；时间钉在右侧不动，只有教室名过长时才滚 */
   const tone = left <= 5 ? "快跑" : left <= 10 ? "该动身了"
     : left <= 18 ? "收拾一下" : "不慌";
   const whenTxt = left <= 0 ? "马上开课" : ("还有 " + left + " 分钟");
@@ -722,33 +731,64 @@ function nextTipHtml(nx, left){
    + 'stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
    + '<span class="nt-body">'
    + '<span class="nt-when">' + whenTxt + ' · ' + tone + '</span>'
-   + '<span class="nt-room"><span class="nt-track">'
-   + '<span class="nt-loc">' + esc2(nx.loc) + '</span>'
-   + '<span class="nt-sep">·</span>'
-   + '<span class="nt-time">' + nx.start + '</span>'
-   + '</span></span>'
-   + '<span class="nt-sub">' + esc2(nx.teacher) + '</span>'
+   + '<span class="nt-room">'
+   +   '<span class="nt-scroll"><span class="nt-track">'
+   +     '<span class="nt-loc">' + esc2(nx.loc) + '</span>'
+   +   '</span></span>'
+   +   '<span class="nt-sep">·</span>'
+   +   '<span class="nt-time">' + nx.start + '</span>'
+   + '</span>'
+   + '<span class="nt-foot"><span class="nt-sub">' + esc2(nx.teacher) + '</span>'
+   +   '<span class="nt-go"><svg width="11" height="11" viewBox="0 0 24 24" fill="none">'
+   +   '<path d="M6 9.5l6 6 6-6" stroke="currentColor" stroke-width="2.6" '
+   +   'stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>'
    + '</span>';
 }
 
-/* 教室名太长：头尾淡出 + 自动来回滚动 */
+/* 教室名太长：头尾淡出 + 自动来回滚动（只滚教室名，时间固定不动） */
 function armTipMarquee(){
   const tip = document.getElementById("nextTip");
   if(!tip || tip.hidden) return;
-  const room = tip.querySelector(".nt-room"), track = tip.querySelector(".nt-track");
-  if(!room || !track) return;
-  room.classList.remove("is-marquee");
-  const dx = Math.ceil(track.getBoundingClientRect().width - room.clientWidth);
+  const box = tip.querySelector(".nt-scroll"), track = tip.querySelector(".nt-track");
+  if(!box || !track) return;
+  box.classList.remove("is-marquee");
+  const dx = Math.ceil(track.getBoundingClientRect().width - box.clientWidth);
   if(dx < 8) return;
-  room.style.setProperty("--nt-dx", dx + "px");
-  room.style.setProperty("--nt-dur", Math.min(15, Math.max(7, Math.round(dx / 9) + 6)) + "s");
-  room.classList.add("is-marquee");
+  box.style.setProperty("--nt-dx", dx + "px");
+  box.style.setProperty("--nt-dur", Math.min(15, Math.max(7, Math.round(dx / 9) + 6)) + "s");
+  box.classList.add("is-marquee");
 }
 let __ntResizeT = 0;
 window.addEventListener("resize", function(){
   clearTimeout(__ntResizeT);
   __ntResizeT = setTimeout(armTipMarquee, 180);
 });
+
+/* 点提醒卡片：平滑滑到「下节课」那一行并高亮一下 */
+function jumpToNextClass(){
+  const tip = document.getElementById("nextTip");
+  const st = tip ? (tip.dataset.jumpStart || "") : "";
+  if(!st) return false;
+  const items = [].slice.call(document.querySelectorAll("#todayList .t-item"));
+  const hit = items.filter(function(x){
+    const r = x.querySelector(".range");
+    return r && r.textContent.split(" - ")[0] === st;
+  })[0];
+  if(!hit) return false;
+  try{ hit.scrollIntoView({ behavior:"smooth", block:"center" }); }
+  catch(e){ hit.scrollIntoView(); }
+  hit.classList.add("is-jump");
+  setTimeout(function(){ hit.classList.remove("is-jump"); }, 1700);
+  return true;
+}
+document.addEventListener("click", function(e){
+  const tip = document.getElementById("nextTip");
+  if(!tip || tip.hidden) return;
+  const t = e.target;
+  if(t && t.closest && t.closest("#nextTip") === tip) jumpToNextClass();
+});
+
+
 
 
 function renderNextTip(list){
@@ -761,6 +801,7 @@ function renderNextTip(list){
   if(!html){ tip.hidden = true; tip.innerHTML = ""; return; }
   tip.style.setProperty("--nt", colorOf(nx));
   tip.innerHTML = html;
+  tip.dataset.jumpStart = nx.start;
   tip.hidden = false;
   /* 字体和布局落定后再判定一次：字体还没生效时量出来偏窄，会误判成「放得下」 */
   armTipMarquee();
