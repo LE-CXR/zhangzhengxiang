@@ -152,6 +152,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 
 /* 面板内滚动不要带动背后页面 */
 .modal, .news-sheet, .cs-sheet, .ps-sheet, .sync-sheet, .cat-menu{ overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+/* 面板内容包一层：过头滚动时只让这一层带阻尼位移，面板底色不动，回弹时收回去 */
+.sheet-inner{will-change:transform;transform:translateZ(0)}
 /* 移动端面板打开动画（桌面端抽屉用 slideright，别覆盖） */
 @media(max-width:899px){
   .modal, .cs-sheet, .ps-sheet{ animation:slideup .28s cubic-bezier(.2,.9,.3,1.05); }
@@ -567,7 +569,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-13.f5</div>
+    <div class="cs-ver">2026-10-13.f6</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -3410,6 +3412,87 @@ function closePanel(){ if(mask) mask.hidden = true; }
   }, true);
   document.addEventListener("focusout", function(){ setTimeout(sync, 80); setTimeout(sync, 400); }, true);
   setTimeout(sync, 200);
+})();
+</script>
+<script>
+/* ===== 苹果式过头阻尼：面板（详情/新闻/同步/计划）滚到底后继续往上拖，内容带阻力跟手，松手回弹 ===== */
+(function(){
+var SEL = ".modal, .news-sheet, .cs-sheet, .ps-sheet, .sync-sheet, .cat-menu";
+var MAX = 72;
+var K = 120;
+var BACK = 460;
+var inner = null, acc = 0, tOn = false, tMoved = false, tY = 0, resumeT = 0;
+function sheetOf(t){ return (t && t.closest) ? t.closest(SEL) : null; }
+function atBottom(s){ return s.scrollTop + s.clientHeight >= s.scrollHeight - 2; }
+/* 面板里真正在滚的可能不是面板本身（新闻面板是内层列表在滚），一路往上找那个可滚元素 */
+function scrollerOf(t, sheet){
+  var el = t;
+  while(el && el !== sheet){
+    var oy = getComputedStyle(el).overflowY;
+    if((oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight + 1) return el;
+    el = el.parentNode;
+  }
+  return sheet;
+}
+function ensure(sheet){
+  if(sheet.__ibInner) return sheet.__ibInner;
+  var el = document.createElement("div");
+  el.className = "sheet-inner";
+  while(sheet.firstChild) el.appendChild(sheet.firstChild);
+  sheet.appendChild(el);
+  sheet.__ibInner = el;
+  return el;
+}
+function damp(d){
+  var v = MAX * (1 - 1 / (1 + Math.abs(d) / K));
+  return d < 0 ? -v : v;
+}
+function apply(){
+  if(!inner) return;
+  inner.style.transform = acc ? ("translateY(" + damp(acc).toFixed(1) + "px)") : "";
+}
+function back(){
+  if(!inner) return;
+  var el = inner;
+  el.style.transition = "transform " + (BACK / 1000).toFixed(2) + "s cubic-bezier(.22,1.25,.36,1)";
+  el.style.transform = "";
+  acc = 0; tOn = false; tMoved = false; inner = null;
+  setTimeout(function(){ el.style.transition = ""; }, BACK + 40);
+}
+document.addEventListener("touchstart", function(e){
+  var s = sheetOf(e.target);
+  if(!s || e.touches.length !== 1){ tOn = false; return; }
+  var sc = scrollerOf(e.target, s);
+  if(!atBottom(sc)){ tOn = false; return; }
+  inner = ensure(sc); acc = 0; tMoved = false; tY = e.touches[0].clientY; tOn = true;
+}, {passive:true});
+document.addEventListener("touchmove", function(e){
+  if(!tOn || !inner) return;
+  var dy = e.touches[0].clientY - tY;
+  if(!tMoved){
+    if(dy > 6){ tOn = false; return; }
+    if(dy > -6) return;
+    tMoved = true;
+  }
+  acc = dy;
+  apply();
+  if(e.cancelable) e.preventDefault();
+}, {passive:false});
+document.addEventListener("touchend", function(){ if(tOn) back(); }, {passive:true});
+document.addEventListener("touchcancel", function(){ if(tOn) back(); }, {passive:true});
+document.addEventListener("wheel", function(e){
+  var s = sheetOf(e.target);
+  if(!s || e.deltaY <= 0) return;
+  var sc = scrollerOf(e.target, s);
+  if(!atBottom(sc)) return;
+  if(!inner || inner !== sc.__ibInner){ inner = ensure(sc); acc = 0; }
+  acc -= e.deltaY;   /* 往下滚 = 内容上移，和触屏方向保持一致 */
+  if(acc > 400) acc = 400;
+  apply();
+  if(e.cancelable) e.preventDefault();
+  clearTimeout(resumeT);
+  resumeT = setTimeout(back, 160);
+}, {passive:false});
 })();
 </script>
 </body>
