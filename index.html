@@ -569,7 +569,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-13.f7</div>
+    <div class="cs-ver">2026-10-14.f8</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -652,7 +652,6 @@ function dateOfWeekday(week, weekday){ return new Date(ANCHOR.getTime() + ((week
 function viewDate(){
   const now = new Date();
   const mins = now.getHours()*60 + now.getMinutes();
-  if(mins < 21*60) return now;
   const diff = Math.floor((now - ANCHOR)/86400000);
   let w = Math.floor(diff/7)+1;
   if(w<1) w=1; if(w>TOTAL_WEEKS) w=TOTAL_WEEKS;
@@ -661,8 +660,9 @@ function viewDate(){
   courses.forEach(function(c){
     if(c.weekday===wd && inWeek(c, w)){ has = true; lastEnd = Math.max(lastEnd, hm2m(c.end)); }
   });
-  if(has && mins < lastEnd) return now;
-  return new Date(now.getTime() + 86400000);
+  if(!has) return now;            /* 今天本来就没课：留在今天，给「今日无课 · 今天怎么过」 */
+  if(mins < lastEnd) return now;  /* 还有课没上完 */
+  return new Date(now.getTime() + 86400000);   /* 今天的课上完了 -> 直接看明天 */
 }
 function isTomorrowView(){ return fmtDate(viewDate()) !== fmtDate(new Date()); }
 function currentWeekWeekday(){
