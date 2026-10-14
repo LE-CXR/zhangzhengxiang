@@ -261,6 +261,7 @@ html.dark .btn.ghost{background:#2c2a27;border-color:var(--line)}
 .mkt-app-hint{margin:6px 0 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;background:var(--card2);font-size:12px;color:var(--sub);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .mkt-app-hint button{border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer}
 .mkt-app-hint em{font-style:normal;flex:1 1 100%;line-height:1.5}
+.mkt-app-hint .mkt-app-sa{color:var(--accent);opacity:.85}
 .mkt-app-hint .mkt-app-raw{background:var(--card);color:var(--sub);border:1px solid var(--line)}
 .mkt-app-hint .mkt-app-ok{background:transparent;color:var(--sub);padding-left:4px;padding-right:4px}
 /* 类里的 display:flex 会盖掉 [hidden]，必须显式写回来 */
@@ -584,7 +585,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-14.f12</div>
+    <div class="cs-ver">2026-10-14.f13</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -3577,7 +3578,7 @@ var hint = document.createElement("div");
 hint.className = "mkt-app-hint";
 hint.hidden = true;
 hint.innerHTML = '<span>没跳过去？</span>' +
-  '<button type="button" data-run="sc">用快捷指令跳</button>' +
+  '<button type="button" data-run="sc">再试一次</button>' +
   '<button type="button" class="mkt-app-raw" data-run="raw">直接打开试试</button>' +
   '<button type="button" class="mkt-app-ok" data-run="ok">知道了</button>' +
   '<em>设置一次就够：打开「快捷指令」→ 新建 → 添加动作「打开 App」→ 选「股票」→ 命名为「' +
@@ -3588,15 +3589,42 @@ var jumped = false, t1 = 0;
 function left(){ return document.hidden || document.visibilityState === "hidden"; }
 document.addEventListener("visibilitychange", function(){ if(left()) jumped = true; });
 var SEEN_KEY = "mktAppHintV1";
-function go(url){ try{ location.href = url; }catch(e){} }
-function byShortcut(){ go("shortcuts://run-shortcut?name=" + encodeURIComponent(NAME)); }
+/* 桌面版（添加到主屏）里 location.href 有时会被 iOS 吞掉，用 <a>.click() 更稳 */
+function isSa(){ return (navigator.standalone === true) ||
+  (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); }
+var SA_NOTE = "你是把网站加到桌面用的：iOS 在这种模式下有时会拦掉这种跳转。" +
+  "先点「再试一次」（换成另一种跳法）；还不行就用 Safari 打开本站再点这个按钮。";
+function showHintPanel(){
+  try{
+    if(isSa() && !hint.querySelector(".mkt-app-sa")){
+      var em = document.createElement("em");
+      em.className = "mkt-app-sa";
+      em.textContent = SA_NOTE;
+      hint.appendChild(em);
+    }
+  }catch(e){}
+  hint.hidden = false;
+}
+function go(url, how){
+  if(how === "loc"){ try{ location.href = url; }catch(e){} return; }
+  try{
+    var a = document.createElement("a");
+    a.href = url;
+    a.setAttribute("rel", "noopener");
+    a.style.cssText = "position:absolute;left:-9999px;width:0;height:0";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ try{ if(a.parentNode) a.parentNode.removeChild(a); }catch(e){} }, 500);
+  }catch(e){ try{ location.href = url; }catch(e2){} }
+}
+function byShortcut(how){ go("shortcuts://run-shortcut?name=" + encodeURIComponent(NAME), how || "a"); }
 function seen(){ try{ return localStorage.getItem(SEEN_KEY) === "1"; }catch(e){ return false; } }
 function setSeen(){ try{ localStorage.setItem(SEEN_KEY, "1"); }catch(e){} }
 hint.addEventListener("click", function(e){
   var t = e.target;
   var act = (t && t.getAttribute) ? t.getAttribute("data-run") : "";
-  if(act === "sc"){ jumped = false; byShortcut(); }
-  else if(act === "raw"){ jumped = false; go("stocks://"); }
+  if(act === "sc"){ jumped = false; byShortcut("loc"); }
+  else if(act === "raw"){ jumped = false; go("stocks://", "a"); }
   else if(act === "ok"){ setSeen(); hint.hidden = true; }
 });
 btn.addEventListener("click", function(){
@@ -3607,7 +3635,7 @@ btn.addEventListener("click", function(){
   byShortcut();
   t1 = setTimeout(function(){
     if(jumped || left()) return;
-    if(!seen()) hint.hidden = false;      /* 没跳走 -> 把一次性设置摆出来 */
+    if(!seen()) showHintPanel();          /* 没跳走 -> 把一次性设置摆出来 */
     try{ toast("没跳过去？照下面这段设置一次就行"); }catch(e){}
   }, 1500);
 });
