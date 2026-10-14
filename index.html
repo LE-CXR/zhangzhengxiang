@@ -261,6 +261,8 @@ html.dark .btn.ghost{background:#2c2a27;border-color:var(--line)}
 .mkt-app-hint{margin:6px 0 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;background:var(--card2);font-size:12px;color:var(--sub);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .mkt-app-hint button{border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer}
 .mkt-app-hint em{font-style:normal;flex:1 1 100%;line-height:1.5}
+.mkt-app-hint .mkt-app-raw{background:var(--card);color:var(--sub);border:1px solid var(--line)}
+.mkt-app-hint .mkt-app-ok{background:transparent;color:var(--sub);padding-left:4px;padding-right:4px}
 /* 类里的 display:flex 会盖掉 [hidden]，必须显式写回来 */
 .mkt-app-hint[hidden]{display:none}
 .mkt-sec{font-size:14px;font-weight:700;margin:16px 0 8px;display:flex;align-items:center;gap:6px}
@@ -582,7 +584,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-14.f11</div>
+    <div class="cs-ver">2026-10-14.f12</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -3575,46 +3577,39 @@ var hint = document.createElement("div");
 hint.className = "mkt-app-hint";
 hint.hidden = true;
 hint.innerHTML = '<span>没跳过去？</span>' +
-  '<button type="button" data-run="1">用快捷指令跳</button>' +
-  '<em>一次性设置就够了：打开「快捷指令」→ 新建 → 添加动作「打开 App」→ 选「股票」→ 命名为「' +
-  NAME + '」。设好之后这个按钮就直接进股票 App。</em>';
+  '<button type="button" data-run="sc">用快捷指令跳</button>' +
+  '<button type="button" class="mkt-app-raw" data-run="raw">直接打开试试</button>' +
+  '<button type="button" class="mkt-app-ok" data-run="ok">知道了</button>' +
+  '<em>设置一次就够：打开「快捷指令」→ 新建 → 添加动作「打开 App」→ 选「股票」→ 命名为「' +
+  NAME + '」。设好之后点这个按钮就直接进股票 App。（「直接打开试试」是裸试苹果的 stocks://，' +
+  '苹果没公开这个协议，多半无效。）</em>';
 if(h2 && h2.parentNode) h2.parentNode.insertBefore(hint, h2.nextSibling);
-var jumped = false, t1 = 0, t2 = 0;
+var jumped = false, t1 = 0;
 function left(){ return document.hidden || document.visibilityState === "hidden"; }
 document.addEventListener("visibilitychange", function(){ if(left()) jumped = true; });
-function tryScheme(url){
-  try{
-    var f = document.createElement("iframe");
-    f.setAttribute("aria-hidden", "true");
-    f.style.cssText = "position:absolute;width:0;height:0;border:0;left:-9999px";
-    f.src = url;
-    document.body.appendChild(f);
-    setTimeout(function(){ try{ if(f.parentNode) f.parentNode.removeChild(f); }catch(e){} }, 1600);
-  }catch(e){}
-}
-function byShortcut(opt){
-  try{
-    if(opt) location.href = "shortcuts://run-shortcut?name=" + encodeURIComponent(NAME);
-    else tryScheme("shortcuts://run-shortcut?name=" + encodeURIComponent(NAME));
-  }catch(e){}
-}
+var SEEN_KEY = "mktAppHintV1";
+function go(url){ try{ location.href = url; }catch(e){} }
+function byShortcut(){ go("shortcuts://run-shortcut?name=" + encodeURIComponent(NAME)); }
+function seen(){ try{ return localStorage.getItem(SEEN_KEY) === "1"; }catch(e){ return false; } }
+function setSeen(){ try{ localStorage.setItem(SEEN_KEY, "1"); }catch(e){} }
 hint.addEventListener("click", function(e){
   var t = e.target;
-  if(t && t.getAttribute && t.getAttribute("data-run")){ jumped = false; byShortcut(true); }
+  var act = (t && t.getAttribute) ? t.getAttribute("data-run") : "";
+  if(act === "sc"){ jumped = false; byShortcut(); }
+  else if(act === "raw"){ jumped = false; go("stocks://"); }
+  else if(act === "ok"){ setSeen(); hint.hidden = true; }
 });
 btn.addEventListener("click", function(){
   jumped = false;
   hint.hidden = true;
-  clearTimeout(t1); clearTimeout(t2);
-  tryScheme("stocks://");
+  clearTimeout(t1);
+  /* iOS 只认顶层跳转：先走快捷指令（唯一可靠的一条） */
+  byShortcut();
   t1 = setTimeout(function(){
     if(jumped || left()) return;
-    byShortcut(false);
-    t2 = setTimeout(function(){
-      if(jumped || left()) return;
-      hint.hidden = false;
-    }, 1400);
-  }, 1200);
+    if(!seen()) hint.hidden = false;      /* 没跳走 -> 把一次性设置摆出来 */
+    try{ toast("没跳过去？照下面这段设置一次就行"); }catch(e){}
+  }, 1500);
 });
 })();
 </script>
