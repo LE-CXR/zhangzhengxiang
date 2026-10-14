@@ -255,6 +255,12 @@ html.dark .btn.ghost{background:#2c2a27;border-color:var(--line)}
 .q-src{font-size:14px;color:var(--accent);margin-top:14px}
 /* ===== 行情速览（Apple 审美） ===== */
 .mkt-meta{font-size:13px;color:var(--sub);margin-bottom:6px}
+/* 行情速览右侧的「股票 App」按钮：只在 iPhone/iPad 上出现 */
+.mkt-app{margin-left:auto;border:1px solid var(--line);background:var(--card2);color:var(--accent);font-size:12px;font-weight:700;font-family:inherit;border-radius:999px;padding:3px 10px;cursor:pointer;white-space:nowrap}
+.mkt-app:active{transform:scale(.95)}
+.mkt-app-hint{margin:6px 0 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;background:var(--card2);font-size:12px;color:var(--sub);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.mkt-app-hint button{border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer}
+.mkt-app-hint em{font-style:normal;flex:1 1 100%;line-height:1.5}
 .mkt-sec{font-size:14px;font-weight:700;margin:16px 0 8px;display:flex;align-items:center;gap:6px}
 .mkt-sec::before{content:"";width:3px;height:13px;border-radius:2px;background:var(--accent);flex:none}
 .mkt-sec:first-child{margin-top:8px}
@@ -479,6 +485,7 @@ html.dark .reader-frame{background:#1a1917}
   <h2>
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 17l5-5 4 3 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 8h3v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     行情速览
+    <button class="mkt-app" id="mktAppBtn" type="button" hidden>股票 App ›</button>
   </h2>
   <div class="mkt-meta" id="mktMeta"></div>
   <div id="mktBox"><div class="empty">正在获取最新行情…</div></div>
@@ -573,7 +580,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-14.f9</div>
+    <div class="cs-ver">2026-10-14.f10</div>
   </div>
 </div>
 <div id="toast"></div>
@@ -3546,6 +3553,67 @@ document.addEventListener("wheel", function(e){
   clearTimeout(resumeT);
   resumeT = setTimeout(back, 160);
 }, {passive:false});
+})();
+</script>
+<script>
+/* ===== 一键跳到 iPhone 的「股票」App =====
+   苹果没有公开打开 Stocks 的接口：先试 stocks://，1.2 秒还没切走就退到「快捷指令」，
+   还是不行就把一次性设置步骤摆在页面上（用 iframe 试协议，失败时不会弹 Safari 的报错框）。 */
+(function(){
+var btn = document.getElementById("mktAppBtn");
+if(!btn) return;
+var ua = navigator.userAgent || "";
+var iOS = /iPhone|iPad|iPod/.test(ua) ||
+          (navigator.platform === "MacIntel" && (navigator.maxTouchPoints || 0) > 1);
+if(!iOS) return;
+var NAME = "看股票";
+btn.hidden = false;
+var h2 = btn.closest ? btn.closest("h2") : btn.parentNode;
+var hint = document.createElement("div");
+hint.className = "mkt-app-hint";
+hint.hidden = true;
+hint.innerHTML = '<span>没跳过去？</span>' +
+  '<button type="button" data-run="1">用快捷指令跳</button>' +
+  '<em>一次性设置就够了：打开「快捷指令」→ 新建 → 添加动作「打开 App」→ 选「股票」→ 命名为「' +
+  NAME + '」。设好之后这个按钮就直接进股票 App。</em>';
+if(h2 && h2.parentNode) h2.parentNode.insertBefore(hint, h2.nextSibling);
+var jumped = false, t1 = 0, t2 = 0;
+function left(){ return document.hidden || document.visibilityState === "hidden"; }
+document.addEventListener("visibilitychange", function(){ if(left()) jumped = true; });
+function tryScheme(url){
+  try{
+    var f = document.createElement("iframe");
+    f.setAttribute("aria-hidden", "true");
+    f.style.cssText = "position:absolute;width:0;height:0;border:0;left:-9999px";
+    f.src = url;
+    document.body.appendChild(f);
+    setTimeout(function(){ try{ if(f.parentNode) f.parentNode.removeChild(f); }catch(e){} }, 1600);
+  }catch(e){}
+}
+function byShortcut(opt){
+  try{
+    if(opt) location.href = "shortcuts://run-shortcut?name=" + encodeURIComponent(NAME);
+    else tryScheme("shortcuts://run-shortcut?name=" + encodeURIComponent(NAME));
+  }catch(e){}
+}
+hint.addEventListener("click", function(e){
+  var t = e.target;
+  if(t && t.getAttribute && t.getAttribute("data-run")){ jumped = false; byShortcut(true); }
+});
+btn.addEventListener("click", function(){
+  jumped = false;
+  hint.hidden = true;
+  clearTimeout(t1); clearTimeout(t2);
+  tryScheme("stocks://");
+  t1 = setTimeout(function(){
+    if(jumped || left()) return;
+    byShortcut(false);
+    t2 = setTimeout(function(){
+      if(jumped || left()) return;
+      hint.hidden = false;
+    }, 1400);
+  }, 1200);
+});
 })();
 </script>
 </body>
