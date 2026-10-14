@@ -261,6 +261,8 @@ html.dark .btn.ghost{background:#2c2a27;border-color:var(--line)}
 .mkt-app-hint{margin:6px 0 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;background:var(--card2);font-size:12px;color:var(--sub);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .mkt-app-hint button{border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer}
 .mkt-app-hint em{font-style:normal;flex:1 1 100%;line-height:1.5}
+/* 类里的 display:flex 会盖掉 [hidden]，必须显式写回来 */
+.mkt-app-hint[hidden]{display:none}
 .mkt-sec{font-size:14px;font-weight:700;margin:16px 0 8px;display:flex;align-items:center;gap:6px}
 .mkt-sec::before{content:"";width:3px;height:13px;border-radius:2px;background:var(--accent);flex:none}
 .mkt-sec:first-child{margin-top:8px}
@@ -580,7 +582,7 @@ html.dark .reader-frame{background:#1a1917}
       <button class="cs-btn" id="csOff">关闭</button>
     </div>
     <div class="cs-msg" id="csMsg"></div>
-    <div class="cs-ver">2026-10-14.f10</div>
+    <div class="cs-ver">2026-10-14.f11</div>
   </div>
 </div>
 <div id="toast"></div>
